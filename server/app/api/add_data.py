@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from server.app.database.add_data import fill_dummy_data
+from app.database.add_data import fill_dummy_data
 
 add_data_v1 = Blueprint('add_data_v1', 'add_data_v1', url_prefix='/api/add-data')
 
