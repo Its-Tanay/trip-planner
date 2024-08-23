@@ -1,11 +1,17 @@
 import React, {
     createContext,
+    Dispatch,
+    SetStateAction,
     useContext,
     type ReactNode,
 } from "react";
+import { ItineraryReq, CurrentPage } from "../../interfaces/itinerary-req";
 
 interface ItineraryContextType {
-    itinerary: string[]; 
+    itineraryReq: ItineraryReq;
+    setItineraryReq: Dispatch<SetStateAction<ItineraryReq>>;
+    currentPage: CurrentPage;
+    setCurrentPage: Dispatch<SetStateAction<CurrentPage>>;
 }
 
 const ItineraryContext = createContext<ItineraryContextType | undefined>(undefined);
@@ -17,11 +23,18 @@ interface ItineraryContextProviderProps {
 export const ItineraryContextProvider = ({
     children,
 }: ItineraryContextProviderProps): JSX.Element => {
+
+    const [currentPage, setCurrentPage] = React.useState<CurrentPage>(CurrentPage.ACTIVITY);
+
+    const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>({} as ItineraryReq);
     
     return (
         <ItineraryContext.Provider 
             value={{
-                itinerary: []
+                itineraryReq,
+                setItineraryReq,
+                currentPage,
+                setCurrentPage
             }}
         >
             {children}
