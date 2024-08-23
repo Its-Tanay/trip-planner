@@ -4,7 +4,6 @@ from flask_cors import CORS
 from app.database.add_dummy_data import fill_dummy_data
 from app.api.itinerary import itinerary_v1
 
-
 def create_app():
     APP_DIR = os.path.abspath(os.path.dirname(__file__))
     app = Flask(__name__)
