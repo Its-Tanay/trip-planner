@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify
 from flask_cors import CORS
-from app.database.db import fill_dummy_data
+from app.database.add_dummy_data import fill_dummy_data
 from app.api.itinerary import itinerary_v1
 
 

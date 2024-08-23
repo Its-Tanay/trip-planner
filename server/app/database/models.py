@@ -77,8 +77,6 @@ class ActivityAvailability(Base):
     open_time: Mapped[time] = mapped_column()
     close_time: Mapped[time] = mapped_column()
 
-    # activity = relationship('Activity', back_populates='availabilities')
-
 class FoodOption(Base):
     __tablename__ = 'food_option'
 
@@ -113,8 +111,6 @@ class FoodOptionAvailability(Base):
     has_breakfast: Mapped[bool] = mapped_column()
     has_lunch: Mapped[bool] = mapped_column()
     has_dinner: Mapped[bool] = mapped_column()
-
-    # food_option = relationship('FoodOption', back_populates='availabilities')
 
 class Itinerary(Base):
     __tablename__ = 'itinerary'
