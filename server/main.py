@@ -1,6 +1,5 @@
 from app.utils.factory import create_app
 from flask import g
-
 import os
 import configparser
 
