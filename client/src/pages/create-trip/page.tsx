@@ -9,7 +9,7 @@ const CreateTripPage : React.FC = () => {
     const { currentPage } = useItineraryContext();
 
     return(
-        <div className="w-screen h-full px-8 pb-4 mx-0 my-auto">
+        <div className="w-screen h-full px-8 pb-4 flex justify-center">
             {
                 currentPage === CurrentPage.ACTIVITY ? <ActivityPage /> : <FoodPage />
             }

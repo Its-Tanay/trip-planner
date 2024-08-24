@@ -7,19 +7,19 @@ export interface ItineraryReq {
 }
 
 export interface ActivityPreferences {
-    categories: number[];
-    budget: Budget;
+    categories?: number[];
+    budget?: Budget;
 }
 
 export interface FoodPreferences {
-    cuisines: number[];
-    budget: number;
-    isVeg: boolean;
+    cuisines?: number[];
+    budget?: number;
+    isVeg?: boolean;
 }
 
 export interface Duration {
-    startDate: Date;
-    endDate: Date;
+    startDate?: string;
+    endDate?: string;
 }
 
 export enum Budget {

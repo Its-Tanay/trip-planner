@@ -26,7 +26,23 @@ export const ItineraryContextProvider = ({
 
     const [currentPage, setCurrentPage] = React.useState<CurrentPage>(CurrentPage.ACTIVITY);
 
-    const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>({} as ItineraryReq);
+    const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>({
+        city: 0,
+        accessibility_need: false,
+        activityPreferences: {
+            categories: [],
+            budget: undefined
+        },
+        foodPreferences: {
+            cuisines: [],
+            budget: undefined,
+            isVeg: false
+        },
+        duration: {
+            startDate: "",
+            endDate: ""
+        }
+    });
     
     return (
         <ItineraryContext.Provider 
