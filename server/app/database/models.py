@@ -15,6 +15,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
 
     itineraries: Mapped[List['Itinerary']] = relationship(back_populates='user')

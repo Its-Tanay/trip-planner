@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.database.operations import generate_itinerary
 from flask_cors import CORS
 
@@ -6,8 +7,10 @@ itinerary_v1 = Blueprint('itinerary_v1', 'itinerary_v1', url_prefix='/api')
 CORS(itinerary_v1)
 
 @itinerary_v1.route('generate', methods=["POST"])
+@jwt_required() 
 def api_post_create_itinerary():
     try:
+        current_user = get_jwt_identity()
         request_data = request.get_json()
         if not request_data:
             return jsonify({"error": "No JSON payload provided or JSON is invalid."}), 400
