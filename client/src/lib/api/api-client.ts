@@ -8,11 +8,12 @@ interface ApiClientOptions {
   body?: any;
   headers?: Record<string, string>;
   requiresAuth?: boolean;
+  onUnauthorized?: () => void;
 }
 
 const BASE_URL = "http://127.0.0.1:5000";
 
-async function apiClient<T>({ method, url, body, headers = {}, requiresAuth = true }: ApiClientOptions): Promise<T> {
+async function apiClient<T>({ method, url, body, headers = {}, requiresAuth = true, onUnauthorized }: ApiClientOptions): Promise<T> {
   const fullUrl = `${BASE_URL}${url}`;
   
   if (requiresAuth) {
@@ -35,7 +36,7 @@ async function apiClient<T>({ method, url, body, headers = {}, requiresAuth = tr
 
   if (response.status === 401) {
     removeToken();
-    
+    onUnauthorized?.();
     throw new Error('Unauthorized');
   }
 

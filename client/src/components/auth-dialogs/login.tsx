@@ -24,12 +24,11 @@ const LoginDialog: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess 
     const successHandler = (data: LoginResponse) => {
         setToken(data.access_token);
         onLoginSuccess();
-        setOpen(false); // Only close dialog on successful login
+        setOpen(false);
     };
 
     const errorHandler = (error: any) => {
         console.error("Login failed", error);
-        // Optionally, handle error state here (e.g., show an error message to the user)
     };
 
     const loginMutation = useLogin(successHandler, errorHandler);
