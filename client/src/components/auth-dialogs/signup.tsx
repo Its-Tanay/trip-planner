@@ -12,8 +12,12 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { SignupReq } from "../../interfaces/auth";
 import { useSignup } from "../../lib/api/api-module";
+import { useToast } from "../ui/toast/use-toast";
 
 const SignupDialog: React.FC = () => {
+
+    const { toast } = useToast();
+
     const [open, setOpen] = React.useState(false);
 
     const [formData, setFormData] = React.useState<SignupReq>({
@@ -23,12 +27,20 @@ const SignupDialog: React.FC = () => {
     });
 
     const successHandler = (data: any) => {
-        console.log("Signup successful!", data);
+        toast({
+            title: "Signup successful",
+            description: data.message,
+            variant: "default",
+        });
         setOpen(false);
     }
 
     const errorHandler = (error: any) => {
-        console.error("Signup error:", error);
+        toast({
+            title: "Signup failed",
+            description: error.message,
+            variant: "destructive",
+        });
     }
 
     const signupMutation = useSignup(successHandler,errorHandler);

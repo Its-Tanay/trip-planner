@@ -14,8 +14,11 @@ import { useLogin } from "../../lib/api/api-module";
 import { LoginRequest, LoginResponse } from "../../interfaces/auth";
 import { setToken } from "../../lib/api/auth";
 import { useAuthContext } from "../../lib/context/auth-context";
+import { useToast } from "../ui/toast/use-toast";
 
 const LoginDialog: React.FC = () => {
+
+    const { toast } = useToast();
 
     const { setIsLoggedin, setUserdetails } = useAuthContext();
 
@@ -31,10 +34,19 @@ const LoginDialog: React.FC = () => {
         setToken(data.access_token);
         setIsLoggedin(true);
         setOpen(false);
+        toast({
+            title: "Login successful",
+            description: "You have been logged in",
+            variant: "default"
+        });
     };
 
     const errorHandler = (error: any) => {
-        console.error("Login failed", error);
+        toast({
+            title: "Login failed",
+            description: error.message,
+            variant : "destructive"
+        });
     };
 
     const loginMutation = useLogin(successHandler, errorHandler);
