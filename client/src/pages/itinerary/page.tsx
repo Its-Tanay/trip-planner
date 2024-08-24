@@ -5,11 +5,14 @@ import {
     AccordionItem,
     AccordionTrigger 
 } from "../../components/ui/accordion";
-import { mockData } from "./mock_data";
 import { locationIcon } from "../../lib/assets";
 import ActivityItem from "../homescreen/activity-item";
+import { useItineraryContext } from "../../lib/context/itinerary-context";
 
 const ItineraryPage : React.FC = () => {
+
+    const { itineraryRes } = useItineraryContext();
+
     return (
         <div className="w-screen h-full px-8 flex justify-center">
             <div className="h-full max-w-[758px] w-full flex flex-col items-center gap-8 md:gap-12 lg:gap-10">
@@ -18,7 +21,7 @@ const ItineraryPage : React.FC = () => {
                 </h2>
                 <div className="w-full h-full flex flex-col items-center gap-6 md:gap-10 lg:gap-10">
                     <Accordion type="single" collapsible className="w-full flex flex-col gap-8 pb-8">
-                        {Object.entries(mockData.itinerary).map(([date, items], index) => (
+                        {Object.entries(itineraryRes?.itinerary ?? {}).map(([date, items], index) => (
                             <AccordionItem key={index} value={`item-${index}`}>
                             <AccordionTrigger className="text-xl md:text-3xl lg:text-4xl">
                                 <div className="flex items-center justify-start gap-8">

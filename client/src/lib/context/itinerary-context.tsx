@@ -6,7 +6,7 @@ import React, {
     type ReactNode,
 } from "react";
 import { ItineraryReq, CurrentPage } from "../../interfaces/itinerary-req";
-import { useCreateItinerary } from "../api/api-module";
+import { MutateFunctionInterface, useCreateItinerary } from "../api/api-module";
 import { ItineraryRes } from "@/interfaces/itinerary-res";
 
 interface ItineraryContextType {
@@ -14,8 +14,8 @@ interface ItineraryContextType {
     setItineraryReq: Dispatch<SetStateAction<ItineraryReq>>;
     currentPage: CurrentPage;
     setCurrentPage: Dispatch<SetStateAction<CurrentPage>>;
-    itineraryMutation: any;
     itineraryRes: ItineraryRes | undefined;
+    itineraryMutation: MutateFunctionInterface<ItineraryReq, ItineraryRes>;
 }
 
 const ItineraryContext = createContext<ItineraryContextType | undefined>(undefined);

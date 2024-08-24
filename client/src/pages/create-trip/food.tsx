@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useItineraryContext } from "../../lib/context/itinerary-context";
 import { Cuisines } from "../data";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
@@ -8,7 +8,7 @@ import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const FoodPage: React.FC = () => {
-    const { setItineraryReq, itineraryReq, setCurrentPage } = useItineraryContext();
+    const { setItineraryReq, itineraryReq, setCurrentPage, itineraryMutation } = useItineraryContext();
 
     const navigate = useNavigate();
 
@@ -61,9 +61,15 @@ const FoodPage: React.FC = () => {
         );
     };
 
-    const handleNextClick = () => {
+    const handleNextClick = async () => {
         if (validateFields()) {
-            navigate("/trip-itinerary");
+            try {
+                await itineraryMutation.mutateAsync(itineraryReq);
+                navigate("/trip-itinerary");
+            } catch (error) {
+                console.error("Error creating itinerary:", error);
+                alert("An error occurred while creating the itinerary. Please try again.");
+            }
         } else {
             alert("Please fill in all the required fields.");
         }
@@ -72,10 +78,6 @@ const FoodPage: React.FC = () => {
     const handleBackClick = () => {
         setCurrentPage(CurrentPage.ACTIVITY);
     };
-
-    useEffect(() => {
-        console.log(itineraryReq);
-    }, [itineraryReq]);
 
     return (
         <div className="h-full max-w-[576px] w-full flex flex-col items-center gap-8 md:gap-12 lg:gap-10">

@@ -7,7 +7,7 @@ interface ApiClientOptions {
   headers?: Record<string, string>;
 }
 
-const BASE_URL = process.env.BASE_URL_DEV;
+const BASE_URL = "http://127.0.0.1:5000";
 
 async function apiClient<T>({ method, url, body, headers = {} }: ApiClientOptions): Promise<T> {
   const fullUrl = `${BASE_URL}${url}`;

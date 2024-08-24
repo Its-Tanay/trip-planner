@@ -3,11 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { ItineraryRes } from "@/interfaces/itinerary-res";
 import { ItineraryReq } from "@/interfaces/itinerary-req";
 
-interface MutateFunctionInterface<P, R> {
+export interface MutateFunctionInterface<P, R> {
     isPending: boolean;
     isError: boolean;
     isSuccess: boolean;
     mutate: (data: P) => void;
+    mutateAsync: (data: P) => Promise<R>;
     data: R | undefined;
 }
 
@@ -21,7 +22,7 @@ export const useCreateItinerary = (
         mutationFn: async (data: ItineraryReq) => {
             const response = await apiClient<ItineraryRes>({
                 method: "POST",
-                url: "/itinerary",
+                url: "/api/generate",
                 body: data,
             });
             return response;
@@ -41,6 +42,7 @@ export const useCreateItinerary = (
         isError: itineraryMutation.isError,
         isSuccess: itineraryMutation.isSuccess,
         mutate: itineraryMutation.mutate,
+        mutateAsync: itineraryMutation.mutateAsync,
         data: itineraryMutation.data,
     };
 };
