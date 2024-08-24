@@ -112,6 +112,7 @@ const ActivityPage: React.FC = () => {
                         options={Cities}
                         onValueChange={handleCityChange}
                         emptyMessage="No cities found"
+                        value={Cities.find((city) => city.value === itineraryReq.city)}
                     />
                     <DatePickerWithRange
                         date={currentDateRange}
