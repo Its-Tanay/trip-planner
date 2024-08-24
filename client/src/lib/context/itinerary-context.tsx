@@ -7,12 +7,15 @@ import React, {
 } from "react";
 import { ItineraryReq, CurrentPage } from "../../interfaces/itinerary-req";
 import { useCreateItinerary } from "../api/api-module";
+import { ItineraryRes } from "@/interfaces/itinerary-res";
 
 interface ItineraryContextType {
     itineraryReq: ItineraryReq;
     setItineraryReq: Dispatch<SetStateAction<ItineraryReq>>;
     currentPage: CurrentPage;
     setCurrentPage: Dispatch<SetStateAction<CurrentPage>>;
+    itineraryMutation: any;
+    itineraryRes: ItineraryRes | undefined;
 }
 
 const ItineraryContext = createContext<ItineraryContextType | undefined>(undefined);
@@ -44,6 +47,18 @@ export const ItineraryContextProvider = ({
             endDate: ""
         }
     });
+
+    const [itineraryRes, setItineraryRes] = React.useState<ItineraryRes>();
+
+    const successHandler = (data: ItineraryRes) => {
+        setItineraryRes(data);
+    }
+
+    const errorHandler = (error: any) => {
+        console.error(error);
+    }
+
+    const itineraryMutation = useCreateItinerary(successHandler, errorHandler);
     
     return (
         <ItineraryContext.Provider 
@@ -51,7 +66,9 @@ export const ItineraryContextProvider = ({
                 itineraryReq,
                 setItineraryReq,
                 currentPage,
-                setCurrentPage
+                setCurrentPage,
+                itineraryMutation,
+                itineraryRes
             }}
         >
             {children}

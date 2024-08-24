@@ -1,5 +1,3 @@
-// apiClient.ts
-
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 interface ApiClientOptions {
