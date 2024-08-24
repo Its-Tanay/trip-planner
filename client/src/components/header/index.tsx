@@ -6,21 +6,30 @@ import LoginDialog from "../auth-dialogs/login";
 import { removeToken } from "../../lib/api/auth";
 import { Button } from "../ui/button";
 import { useAuthContext } from "../../lib/context/auth-context";
+import { useItineraryContext, defaultItineraryReq } from "../../lib/context/itinerary-context";
+import { CurrentPage } from "../../interfaces/itinerary-req";
 
 const Header: React.FC = () => {
+
+    const { isLoggedin, setIsLoggedin, userdetails } = useAuthContext();
+
+    const { setCurrentPage, setItineraryReq } = useItineraryContext();
+
     const location = useLocation();
     const navigate = useNavigate();
     const isHomepage = location.pathname === "/";
 
-    const handleBackClick = () => {
+    const handleBackClick = async () => {
         if (location.pathname === "/trip-itinerary") {
+            await setCurrentPage(CurrentPage.ACTIVITY)
+            setItineraryReq(defaultItineraryReq);
             navigate("/");
         } else {
+            await setCurrentPage(CurrentPage.ACTIVITY)
+            setItineraryReq(defaultItineraryReq);
             navigate(-1);
         }
     };
-
-    const { isLoggedin, setIsLoggedin, userdetails } = useAuthContext();
 
     const handleLogout = () => {
         removeToken();
