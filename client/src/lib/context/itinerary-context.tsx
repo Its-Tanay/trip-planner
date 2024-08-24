@@ -24,29 +24,31 @@ interface ItineraryContextProviderProps {
     children: ReactNode;
 }
 
+export const defaultItineraryReq: ItineraryReq = {
+    city: 0,
+    accessibility_need: false,
+    activityPreferences: {
+        categories: [],
+        budget: Budget.LOW
+    },
+    foodPreferences: {
+        cuisines: [],
+        budget: Budget.LOW,
+        isVeg: false
+    },
+    duration: {
+        startDate: "",
+        endDate: ""
+    }
+};
+
 export const ItineraryContextProvider = ({
     children,
 }: ItineraryContextProviderProps): JSX.Element => {
 
     const [currentPage, setCurrentPage] = React.useState<CurrentPage>(CurrentPage.ACTIVITY);
 
-    const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>({
-        city: 0,
-        accessibility_need: false,
-        activityPreferences: {
-            categories: [],
-            budget: Budget.LOW
-        },
-        foodPreferences: {
-            cuisines: [],
-            budget: Budget.LOW,
-            isVeg: false
-        },
-        duration: {
-            startDate: "",
-            endDate: ""
-        }
-    });
+    const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>(defaultItineraryReq);
 
     const [itineraryRes, setItineraryRes] = React.useState<ItineraryRes>();
 

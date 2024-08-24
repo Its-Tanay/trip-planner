@@ -9,7 +9,11 @@ const Header: React.FC = () => {
     const isHomepage = location.pathname === "/";
 
     const handleBackClick = () => {
-        navigate(-1); 
+        if (location.pathname === "/trip-itinerary") {
+            navigate("/");
+        } else {
+            navigate(-1);
+        }
     };
 
     return (

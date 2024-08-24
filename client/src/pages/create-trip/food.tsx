@@ -1,5 +1,5 @@
 import React from "react";
-import { useItineraryContext } from "../../lib/context/itinerary-context";
+import { useItineraryContext, defaultItineraryReq } from "../../lib/context/itinerary-context";
 import { Cuisines } from "../data";
 import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
 import { Slider } from "../../components/ui/slider";
@@ -65,7 +65,9 @@ const FoodPage: React.FC = () => {
         if (validateFields()) {
             try {
                 await itineraryMutation.mutateAsync(itineraryReq);
+                setCurrentPage(CurrentPage.ACTIVITY);
                 navigate("/trip-itinerary");
+                setItineraryReq(defaultItineraryReq);
             } catch (error) {
                 console.error("Error creating itinerary:", error);
                 alert("An error occurred while creating the itinerary. Please try again.");
