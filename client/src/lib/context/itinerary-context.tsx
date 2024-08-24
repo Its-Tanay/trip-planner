@@ -5,7 +5,7 @@ import React, {
     useContext,
     type ReactNode,
 } from "react";
-import { ItineraryReq, CurrentPage } from "../../interfaces/itinerary-req";
+import { ItineraryReq, CurrentPage, Budget } from "../../interfaces/itinerary-req";
 import { MutateFunctionInterface, useCreateItinerary } from "../api/api-module";
 import { ItineraryRes } from "@/interfaces/itinerary-res";
 
@@ -35,11 +35,11 @@ export const ItineraryContextProvider = ({
         accessibility_need: false,
         activityPreferences: {
             categories: [],
-            budget: 1
+            budget: Budget.LOW
         },
         foodPreferences: {
             cuisines: [],
-            budget: 1,
+            budget: Budget.LOW,
             isVeg: false
         },
         duration: {

@@ -35,6 +35,7 @@ const ActivityPage: React.FC = () => {
             ...prevState,
             activityPreferences: {
                 categories: categories.map(Number) ?? [],
+                budget: prevState.activityPreferences.budget,
             },
         }));
     };
