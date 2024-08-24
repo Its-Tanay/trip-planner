@@ -7,7 +7,8 @@ import React, {
 } from "react";
 import { ItineraryReq, CurrentPage, Budget } from "../../interfaces/itinerary-req";
 import { MutateFunctionInterface, useCreateItinerary } from "../api/api-module";
-import { ItineraryRes } from "@/interfaces/itinerary-res";
+import { ItineraryRes } from "../../interfaces/itinerary-res";
+import { useToast } from "../../components/ui/toast/use-toast";
 
 interface ItineraryContextType {
     itineraryReq: ItineraryReq;
@@ -46,6 +47,8 @@ export const ItineraryContextProvider = ({
     children,
 }: ItineraryContextProviderProps): JSX.Element => {
 
+    const { toast } = useToast();
+
     const [currentPage, setCurrentPage] = React.useState<CurrentPage>(CurrentPage.ACTIVITY);
 
     const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>(defaultItineraryReq);
@@ -57,7 +60,11 @@ export const ItineraryContextProvider = ({
     }
 
     const errorHandler = (error: any) => {
-        console.error(error);
+        toast({
+            title: "Itinerary creation failed",
+            description: error.message,
+            variant: "destructive"
+        });
     }
 
     const itineraryMutation = useCreateItinerary(successHandler, errorHandler);

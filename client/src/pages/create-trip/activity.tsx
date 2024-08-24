@@ -9,9 +9,13 @@ import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
 import { Slider } from "../../components/ui/slider";
 import { Budget, CurrentPage } from "../../interfaces/itinerary-req";
 import { Button } from "../../components/ui/button";
+import { useToast } from "../../components/ui/toast/use-toast";
 
 const ActivityPage: React.FC = () => {
+
     const { setItineraryReq, itineraryReq, setCurrentPage } = useItineraryContext();
+
+    const { toast } = useToast();
 
     const handleCityChange = (option: Option) => {
         setItineraryReq((prevState) => ({
@@ -82,7 +86,11 @@ const ActivityPage: React.FC = () => {
         if (validateFields()) {
             setCurrentPage(CurrentPage.FOOD);
         } else {
-            alert("Please fill in all the required fields.");
+            toast({
+                title: "Please fill all the fields",
+                description: "All fields are mandatory",
+                variant: "destructive",
+            });
         }
     };
 

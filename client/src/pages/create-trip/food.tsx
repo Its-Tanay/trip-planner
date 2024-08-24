@@ -7,9 +7,14 @@ import { Budget, CurrentPage } from "../../interfaces/itinerary-req";
 import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/loader/index";
+import { useToast } from "../../components/ui/toast/use-toast";
 
 const FoodPage: React.FC = () => {
+
+    const { toast } = useToast();
+
     const { setItineraryReq, itineraryReq, setCurrentPage, itineraryMutation } = useItineraryContext();
+
     const navigate = useNavigate();
 
     const handleCuisineChange = (cuisines: string[]) => {
@@ -69,11 +74,14 @@ const FoodPage: React.FC = () => {
                 navigate("/trip-itinerary");
                 setItineraryReq(defaultItineraryReq);
             } catch (error) {
-                console.error("Error creating itinerary:", error);
-                alert("An error occurred while creating the itinerary. Please try again.");
+                console.error("Itinerary error:", error);
             }
         } else {
-            alert("Please fill in all the required fields.");
+            toast({
+                title: "Incomplete Details",
+                description: "Please fill all the details",
+                variant: "destructive",
+            });
         }
     };
 
