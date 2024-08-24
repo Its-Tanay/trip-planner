@@ -6,10 +6,10 @@ import { Slider } from "../../components/ui/slider";
 import { Budget, CurrentPage } from "../../interfaces/itinerary-req";
 import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../components/loader/index";
 
 const FoodPage: React.FC = () => {
     const { setItineraryReq, itineraryReq, setCurrentPage, itineraryMutation } = useItineraryContext();
-
     const navigate = useNavigate();
 
     const handleCuisineChange = (cuisines: string[]) => {
@@ -78,6 +78,14 @@ const FoodPage: React.FC = () => {
     const handleBackClick = () => {
         setCurrentPage(CurrentPage.ACTIVITY);
     };
+
+    if (itineraryMutation.isPending) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                <Loader />
+            </div>
+        );
+    }
 
     return (
         <div className="h-full max-w-[576px] w-full flex flex-col items-center gap-8 md:gap-12 lg:gap-10">
