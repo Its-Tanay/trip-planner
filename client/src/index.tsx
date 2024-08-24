@@ -1,4 +1,3 @@
-import { StrictMode } from "react"
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
@@ -6,7 +5,7 @@ import "./index.css";
 import HomescreenPage from "./pages/homescreen/page";
 import CreateTripPage from "./pages/create-trip/page";
 import { ItineraryContextProvider } from "./lib/context/itinerary-context";
-
+import ItineraryPage from "./pages/itinerary/page";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: "/create-trip",
         element: <CreateTripPage />
+      },
+      {
+        path : "/trip-itinerary",
+        element : <ItineraryPage />
       }
     ]
   },
@@ -28,10 +31,8 @@ const router = createBrowserRouter([
 const rootElement = document.getElementById("root");
 if (rootElement) {
   createRoot(rootElement).render(
-    <StrictMode>
-      <ItineraryContextProvider>
-        <RouterProvider router={router} />
-      </ItineraryContextProvider>
-    </StrictMode>
+    <ItineraryContextProvider>
+      <RouterProvider router={router} />
+    </ItineraryContextProvider>
   );
 }
