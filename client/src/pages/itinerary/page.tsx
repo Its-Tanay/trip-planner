@@ -37,7 +37,7 @@ const ItineraryPage: React.FC = () => {
 
                             return (
                                 <AccordionItem key={index} value={`item-${index}`}>
-                                    <AccordionTrigger className="text-xl md:text-2xl lg:text-3xl">
+                                    <AccordionTrigger className="text-xl md:text-xl lg:text-2xl">
                                         <div className="flex items-center justify-start gap-8">
                                             <img src={locationIcon} alt="Location Icon" className="w-8 h-8" />
                                             {formattedDate}

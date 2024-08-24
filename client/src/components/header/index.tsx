@@ -1,12 +1,16 @@
 import React from "react";
-import { Button } from "../ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import SignupDialog from "../auth-dialogs/signup";
+import LoginDialog from "../auth-dialogs/login";
+import { isAuthenticated, removeToken } from "../../lib/api/auth";
+import { Button } from "../ui/button";
 
 const Header: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isHomepage = location.pathname === "/";
+    const [isLoggedIn, setIsLoggedIn] = React.useState(isAuthenticated());
 
     const handleBackClick = () => {
         if (location.pathname === "/trip-itinerary") {
@@ -14,6 +18,12 @@ const Header: React.FC = () => {
         } else {
             navigate(-1);
         }
+    };
+
+    const handleLogout = () => {
+        removeToken();
+        setIsLoggedIn(false);
+        navigate("/");
     };
 
     return (
@@ -27,9 +37,16 @@ const Header: React.FC = () => {
                 </h3>
             </div>
             <nav className="w-fit flex items-center gap-8">
-                <Button variant={"default"} >
-                    Log In
-                </Button>
+            {isLoggedIn ? (
+                    <Button variant="outline" onClick={handleLogout}>
+                        Logout
+                    </Button>
+                ) : (
+                    <>
+                        <SignupDialog />
+                        <LoginDialog onLoginSuccess={() => setIsLoggedIn(true)} />
+                    </>
+                )}
             </nav>
         </header>
     );
