@@ -13,17 +13,23 @@ import { Label } from "../../components/ui/label";
 import { useLogin } from "../../lib/api/api-module";
 import { LoginRequest, LoginResponse } from "../../interfaces/auth";
 import { setToken } from "../../lib/api/auth";
+import { useAuthContext } from "../../lib/context/auth-context";
 
-const LoginDialog: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess }) => {
+const LoginDialog: React.FC = () => {
+
+    const { setIsLoggedin, setUserdetails } = useAuthContext();
+
     const [open, setOpen] = React.useState(false);
+
     const [formData, setFormData] = useState({ 
         username: "", 
         password: "" 
     } as LoginRequest);
 
     const successHandler = (data: LoginResponse) => {
+        setUserdetails(data);
         setToken(data.access_token);
-        onLoginSuccess();
+        setIsLoggedin(true);
         setOpen(false);
     };
 
@@ -47,7 +53,7 @@ const LoginDialog: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">Login</Button>
+                <Button variant="outline" className="border-accent-foreground">Login</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[540px] py-[48px] px-[72px] flex flex-col gap-8 ">
                 <DialogHeader>

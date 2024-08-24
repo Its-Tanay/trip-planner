@@ -55,7 +55,7 @@ const SignupDialog: React.FC = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">Sign Up</Button>
+                <Button variant="outline" className="border-accent-foreground">Sign Up</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[540px] py-[48px] px-[72px] flex flex-col gap-8">
                 <DialogHeader>

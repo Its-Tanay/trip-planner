@@ -7,6 +7,7 @@ import CreateTripPage from "./pages/create-trip/page";
 import { ItineraryContextProvider } from "./lib/context/itinerary-context";
 import ItineraryPage from "./pages/itinerary/page";
 import Provider from "./lib/context/queryclient-provider";
+import { AuthContextProvider } from "./lib/context/auth-context";
 
 const router = createBrowserRouter([
   {
@@ -33,9 +34,11 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   createRoot(rootElement).render(
     <Provider>
-      <ItineraryContextProvider>
-        <RouterProvider router={router} />
-      </ItineraryContextProvider>
+      <AuthContextProvider>
+        <ItineraryContextProvider>
+          <RouterProvider router={router} />
+        </ItineraryContextProvider>
+      </AuthContextProvider>
     </Provider>
   );
 }

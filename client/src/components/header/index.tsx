@@ -3,14 +3,14 @@ import { ChevronLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SignupDialog from "../auth-dialogs/signup";
 import LoginDialog from "../auth-dialogs/login";
-import { isAuthenticated, removeToken } from "../../lib/api/auth";
+import { removeToken } from "../../lib/api/auth";
 import { Button } from "../ui/button";
+import { useAuthContext } from "../../lib/context/auth-context";
 
 const Header: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const isHomepage = location.pathname === "/";
-    const [isLoggedIn, setIsLoggedIn] = React.useState(isAuthenticated());
 
     const handleBackClick = () => {
         if (location.pathname === "/trip-itinerary") {
@@ -20,9 +20,11 @@ const Header: React.FC = () => {
         }
     };
 
+    const { isLoggedin, setIsLoggedin, userdetails } = useAuthContext();
+
     const handleLogout = () => {
         removeToken();
-        setIsLoggedIn(false);
+        setIsLoggedin(false);
         navigate("/");
     };
 
@@ -36,15 +38,20 @@ const Header: React.FC = () => {
                     Trip Planner 
                 </h3>
             </div>
-            <nav className="w-fit flex items-center gap-8">
-            {isLoggedIn ? (
-                    <Button variant="outline" onClick={handleLogout}>
-                        Logout
-                    </Button>
+            <nav className="w-fit flex items-center gap-4 lg:gap-8">
+            {isLoggedin ? (
+                    <>
+                        <p>
+                            Welcome, {userdetails.username}
+                        </p>
+                        <Button variant="outline" onClick={handleLogout}>
+                            Logout
+                        </Button>
+                    </>
                 ) : (
                     <>
                         <SignupDialog />
-                        <LoginDialog onLoginSuccess={() => setIsLoggedIn(true)} />
+                        <LoginDialog />
                     </>
                 )}
             </nav>
