@@ -31,11 +31,11 @@ export const ItineraryContextProvider = ({
         accessibility_need: false,
         activityPreferences: {
             categories: [],
-            budget: undefined
+            budget: 1
         },
         foodPreferences: {
             cuisines: [],
-            budget: undefined,
+            budget: 1,
             isVeg: false
         },
         duration: {
