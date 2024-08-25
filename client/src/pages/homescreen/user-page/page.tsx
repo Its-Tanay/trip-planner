@@ -27,10 +27,16 @@ const UserPage : React.FC = () => {
 
     const [userItineraries, setUserItineraries] = React.useState<UserItineraryItem[]>([]);
 
+    const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+
     React.useEffect(() => {
         getAllItinerariesMutation.mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [refreshTrigger]);
+
+    const triggerRefresh = () => {
+        setRefreshTrigger(prev => prev + 1);
+    }
 
     if(getAllItinerariesMutation.isPending) {
         return (
@@ -53,7 +59,7 @@ const UserPage : React.FC = () => {
                         </Button>
                     </Link>
                 </div>
-                <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 md:gap-12 lg:gap-10">
+                <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 md:gap-12 lg:gap-10 pb-8">
                     {userItineraries?.map((itinerary, index) => (
                         <TripCard 
                             key={index} 
@@ -61,6 +67,7 @@ const UserPage : React.FC = () => {
                             start_date={itinerary.start_date} 
                             end_date={itinerary.end_date}
                             id={itinerary.id}
+                            onDeleteSuccess={triggerRefresh}
                         />
                     ))}
                 </div>

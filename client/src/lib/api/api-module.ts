@@ -144,3 +144,35 @@ export const useGetAllItineraries = (
         data: itineraryMutation.data,
     };
 }
+
+export const useDeleteItinerary = (
+    id: number,
+    onSuccessHandler?: () => void,
+    onErrorHandler?: (error: any) => void
+): MutateFunctionInterface<void, void> => {
+    const deleteMutation = useMutation({
+        mutationKey: ["deleteItinerary"],
+        mutationFn: async () => {
+            const response = await apiClient<void>({
+                method: "DELETE",
+                url: `/api/delete/${id}`,
+                requiresAuth: true,
+            });
+            return response;
+        },
+        onSuccess: () => {
+            onSuccessHandler?.();
+        },
+        onError: (error) => {
+            onErrorHandler?.(error);
+        },
+    });
+    return {
+        isPending: deleteMutation.isPending,
+        isError: deleteMutation.isError,
+        isSuccess: deleteMutation.isSuccess,
+        mutate: deleteMutation.mutate,
+        mutateAsync: deleteMutation.mutateAsync,
+        data: deleteMutation.data,
+    };
+}
