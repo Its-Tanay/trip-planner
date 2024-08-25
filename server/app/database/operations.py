@@ -258,7 +258,9 @@ def get_itineraries_by_user(current_user):
         for obj in session.execute(statement):
             results.append({
                 **obj.Itinerary.to_dict(),
-                "city": obj.City.name
+                "city": obj.City.name,
+                "start_date": obj.Itinerary.start_date.strftime("%Y-%m-%d"),
+                "end_date": obj.Itinerary.end_date.strftime("%Y-%m-%d")
             })
 
         return results
@@ -323,7 +325,9 @@ def get_itinerary_by_id(current_user, itinerary_id):
 
     return {
         **itinerary,
-        "itinerary": allForThisTrip
+        "itinerary": allForThisTrip,
+        "start_date": itinerary.get('start_date').strftime("%Y-%m-%d"),
+        "end_date": itinerary.get('end_date').strftime("%Y-%m-%d")
     }
 
 def delete_itinerary_by_id(current_user, itinerary_id):
