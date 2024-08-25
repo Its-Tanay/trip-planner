@@ -118,3 +118,207 @@ def create_itinerary(session: Session, activities: List[Activity], food_options:
         "itinerary": itinerary,
         "total_expense": total_expense
     }
+
+
+## NEW ALGO TO BE FIXED -
+
+# from functools import cmp_to_key
+# from datetime import datetime, time, timedelta
+# import os
+# import csv
+# from sqlalchemy import create_engine, desc, and_, or_, case
+
+# from flask import g, current_app
+
+# from werkzeug.local import LocalProxy
+
+# from app.database.models import Base, User, City, Category, Cuisine, Activity, ActivityAvailability, FoodOption, FoodOptionAvailability, Itinerary, ItineraryActivity, ItineraryFood
+
+
+# from sqlalchemy.orm import Session
+# from sqlalchemy import select
+
+# def generate_itinerary(params):
+#     with Session(engine) as session:
+#         start_date = params.get("duration").get("startDate")
+#         end_date = params.get("duration").get("endDate")
+#         city = params.get("city")
+#         activity_budget = params.get("activityPreferences").get("budget")
+#         activity_categories = params.get("activityPreferences").get("categories")
+#         food_budget = params.get("foodPreferences").get("budget")
+#         food_cuisines = params.get("foodPreferences").get("cuisines")
+#         is_veg = params.get("foodPreferences").get("isVeg")
+#         accessibility_needed = params.get("accessibility_need")
+
+#         foodOptions = []
+#         for day in range(7):
+#             statement = select(
+#                 FoodOption, FoodOptionAvailability
+#             ).join(
+#                 FoodOption.availabilities
+#             ).where(
+#                 (FoodOptionAvailability.day_of_week == day) & 
+#                 (FoodOption.city_id == city) &
+#                 (FoodOptionAvailability.close_time > FoodOptionAvailability.open_time) &
+#                 (FoodOption.budget_category <= food_budget) &
+#                 (or_(is_veg == False, FoodOption.is_vegetarian == True)) &
+#                 (or_(accessibility_needed == False, FoodOption.wheelchair_accessibility == True))
+#             ).order_by(
+#                 desc(
+#                     case(
+#                         (FoodOption.cuisine_id.in_(food_cuisines), FoodOption.popularity + 3),
+#                         else_ = FoodOption.popularity
+#                     )
+#                 )
+#             )
+
+#             optThatDay = []
+#             for obj in session.execute(statement):
+#                 opt = obj.FoodOption.to_dict()
+#                 opt2 = obj.FoodOptionAvailability.to_dict()
+
+#                 opt2.update(opt)
+#                 optThatDay.append(opt2)
+            
+#             foodOptions.append(optThatDay)
+
+#         no_of_days = (datetime.strptime(end_date, "%Y-%m-%d") - datetime.strptime(start_date, "%Y-%m-%d")).days
+
+#         allForThisTripUnsorted = []
+#         foodSelectsId = {}
+#         for i in range(no_of_days):
+#             delta = timedelta(days=i)
+#             currDate = datetime.strptime(start_date, "%Y-%m-%d") + delta
+
+#             b, l, d = None, None, None
+
+#             for option in foodOptions[int(currDate.strftime("%w"))]:
+#                 if b and l and d:
+#                     break
+#                 if not foodSelectsId.get(option.get('id')):
+#                     if not b and option.get('has_breakfast') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 540 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 600:
+#                         b = option
+#                         foodSelectsId[option.get('id')] = True
+#                     elif not l and option.get('has_lunch') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 780 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 840:
+#                         l = option
+#                         foodSelectsId[option.get('id')] = True
+#                     elif not d and option.get('has_dinner') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 1260 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 1320:
+#                         d = option
+#                         foodSelectsId[option.get('id')] = True
+            
+#             if not b or not l or not d:
+#                 foodSelectsId.clear()
+#                 for option in foodOptions[int(currDate.strftime("%w"))]:
+#                     if b and l and d:
+#                         break
+#                     if not foodSelectsId.get(option.get('id')):
+#                         if not b and option.get('has_breakfast') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 540 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 600:
+#                             b = option
+#                             foodSelectsId[option.get('id')] = True
+#                         elif not l and option.get('has_lunch') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 780 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 840:
+#                             l = option
+#                             foodSelectsId[option.get('id')] = True
+#                         elif not d and option.get('has_dinner') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 1260 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 1320:
+#                             d = option
+#                             foodSelectsId[option.get('id')] = True
+
+#             allForThisTripUnsorted.append([
+#                 {
+#                     **b, 
+#                     "startTime": time(hour=9).strftime("%H:%M"),
+#                     "endTime": time(hour=10).strftime("%H:%M"),
+#                     "expense": b.get("average_price"),
+#                     "type": "food"
+#                 },
+#                 {
+#                     **l, 
+#                     "startTime": time(hour=13).strftime("%H:%M"),
+#                     "endTime": time(hour=14).strftime("%H:%M"),
+#                     "expense": l.get("average_price"),
+#                     "type": "food"
+#                 },
+#                 {
+#                     **d, 
+#                     "startTime": time(hour=21).strftime("%H:%M"),
+#                     "endTime": time(hour=22).strftime("%H:%M"),
+#                     "expense": d.get("average_price"),
+#                     "type": "food"
+#                 },
+#             ])
+
+#         activityOptions = []
+#         for day in range(7):
+#             statement = select(
+#                 Activity, ActivityAvailability
+#             ).join(
+#                 Activity.availabilities
+#             ).join(
+#                 Activity.city
+#             ).where(
+#                 (ActivityAvailability.day_of_week == day) & 
+#                 (Activity.city_id == city) &
+#                 (ActivityAvailability.close_time > ActivityAvailability.open_time) &
+#                 (Activity.budget_category <= activity_budget) &
+#                 (or_(accessibility_needed == False, Activity.wheelchair_accessibility == True))
+#             ).order_by(
+#                 desc(
+#                     case(
+#                         (Activity.category_id.in_(activity_categories), Activity.popularity + 3),
+#                         else_ = Activity.popularity
+#                     )
+#                 )
+#             )
+
+#             optThatDay = []
+#             for obj in session.execute(statement):
+#                 opt = obj.Activity.to_dict()
+#                 opt2 = obj.ActivityAvailability.to_dict()
+
+#                 opt2.update(opt)
+#                 optThatDay.append(opt2)
+            
+#             activityOptions.append(optThatDay)
+
+#         allForThisTrip = []
+#         activitySelectsId = {}
+
+#         for i in range(no_of_days):
+#             delta = timedelta(days=i)
+#             currDate = datetime.strptime(start_date, "%Y-%m-%d") + delta
+
+#             currEnd = 600
+#             for option in activityOptions[int(currDate.strftime("%w"))]:
+#                 if not activitySelectsId.get(option.get('id')):
+#                     if time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= currEnd and min(time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute, 780) >= currEnd + option.get("average_duration"):
+#                         allForThisTripUnsorted[i].append({
+#                             **option,
+#                             "startTime": time(hour=int(currEnd/60), minute=int(currEnd%60)).strftime("%H:%M"),
+#                             "endTime": time(hour=int((currEnd+option.get("average_duration"))/60), minute=int((currEnd+option.get("average_duration"))%60)).strftime("%H:%M"),
+#                             "expense": option.get("average_price"),
+#                             "type": "activity"
+#                         })
+#                         currEnd += option.get("average_duration")
+#                         activitySelectsId[option.get('id')] = True
+
+#             currEnd = 840
+#             for option in activityOptions[int(currDate.strftime("%w"))]:
+#                 if not activitySelectsId.get(option.get('id')):
+#                     if time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= currEnd and min(time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute, 1260) >= currEnd + option.get("average_duration"):
+#                         allForThisTripUnsorted[i].append({
+#                             **option,
+#                             "startTime": time(hour=int(currEnd/60), minute=int(currEnd%60)).strftime("%H:%M"),
+#                             "endTime": time(hour=int((currEnd+option.get("average_duration"))/60), minute=int((currEnd+option.get("average_duration"))%60)).strftime("%H:%M"),
+#                             "expense": option.get("average_price"),
+#                             "type": "activity"
+#                         })
+#                         currEnd += option.get("average_duration")
+#                         activitySelectsId[option.get('id')] = True
+
+#             allForThisTrip.append(sorted(allForThisTripUnsorted[i], key=cmp_to_key(lambda item1, item2: 
+#                 (datetime.strptime(item1.get('startTime'), "%H:%M") - datetime.strptime(item2.get('startTime'), "%H:%M")).total_seconds()
+#             )))
+
+#         return {
+#             **params,
+#             "itinerary": allForThisTrip
+#         }

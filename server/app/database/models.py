@@ -68,6 +68,23 @@ class Activity(Base):
     category: Mapped[Category] = relationship(back_populates='activities')
     availabilities: Mapped['ActivityAvailability'] = relationship()
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'average_price': self.average_price,
+            'popularity': self.popularity,
+            'wheelchair_accessibility': self.wheelchair_accessibility,
+            'average_duration': self.average_duration,
+            'budget_category': self.budget_category,
+            'image_url': self.image_url,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'city_id': self.city_id,
+            'category_id': self.category_id
+        }
+
 class ActivityAvailability(Base):
     __tablename__ = 'activity_availability'
 
@@ -77,6 +94,15 @@ class ActivityAvailability(Base):
     day_of_week: Mapped[int] = mapped_column()
     open_time: Mapped[time] = mapped_column()
     close_time: Mapped[time] = mapped_column()
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'activity_id': self.activity_id,
+            'day_of_week': self.day_of_week,
+            'open_time': self.open_time.isoformat() if self.open_time else None,
+            'close_time': self.close_time.isoformat() if self.close_time else None
+        }
 
 class FoodOption(Base):
     __tablename__ = 'food_option'
@@ -99,6 +125,22 @@ class FoodOption(Base):
     cuisine: Mapped[Cuisine] = relationship(back_populates='food_options')
     availabilities: Mapped['FoodOptionAvailability'] = relationship()
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'average_price': self.average_price,
+            'popularity': self.popularity,
+            'wheelchair_accessibility': self.wheelchair_accessibility,
+            'budget_category': self.budget_category,
+            'is_vegetarian': self.is_vegetarian,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'city_id': self.city_id,
+            'cuisine_id': self.cuisine_id
+        }
+
 
 class FoodOptionAvailability(Base):
     __tablename__ = 'food_option_availability'
@@ -112,6 +154,18 @@ class FoodOptionAvailability(Base):
     has_breakfast: Mapped[bool] = mapped_column()
     has_lunch: Mapped[bool] = mapped_column()
     has_dinner: Mapped[bool] = mapped_column()
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'food_option_id': self.food_option_id,
+            'day_of_week': self.day_of_week,
+            'open_time': self.open_time.isoformat() if self.open_time else None,
+            'close_time': self.close_time.isoformat() if self.close_time else None,
+            'has_breakfast': self.has_breakfast,
+            'has_lunch': self.has_lunch,
+            'has_dinner': self.has_dinner
+        }
 
 class Itinerary(Base):
     __tablename__ = 'itinerary'
