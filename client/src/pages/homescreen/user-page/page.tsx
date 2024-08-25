@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../../../components/ui/button";
 import { Link } from "react-router-dom";
+import TripCard from "./trip-card";
 
 const UserPage : React.FC = () => {
 
@@ -16,6 +17,11 @@ const UserPage : React.FC = () => {
                             Create Trip
                         </Button>
                     </Link>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-10">
+                    <TripCard city={"Paris"} start_date={"2022-10-10"} end_date={"2022-10-20"} id={1} />
+                    <TripCard city={"London"} start_date={"2022-11-10"} end_date={"2022-11-20"} id={2} />
+                    <TripCard city={"New York"} start_date={"2022-12-10"} end_date={"2022-12-20"} id={3} />
                 </div>
             </div>
         </div>
