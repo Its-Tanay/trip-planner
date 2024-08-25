@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ItineraryRes } from "../../interfaces/itinerary-res";
 import { ItineraryReq } from "../../interfaces/itinerary-req";
 import { LoginRequest, LoginResponse } from "@/interfaces/auth";
-import { UserItineraries } from "@/interfaces/user-itineraries";
+import { UserItineraryItem} from "@/interfaces/user-itineraries";
 
 export interface MutateFunctionInterface<P, R> {
     isPending: boolean;
@@ -115,13 +115,13 @@ export const useCreateItinerary = (
 };
 
 export const useGetAllItineraries = (
-    onSuccessHandler?: (data: UserItineraries) => void,
+    onSuccessHandler?: (data: UserItineraryItem[]) => void,
     onErrorHandler?: (error: any) => void
-): MutateFunctionInterface<void, UserItineraries> => {
+): MutateFunctionInterface<void, UserItineraryItem[]> => {
     const itineraryMutation = useMutation({
         mutationKey: ["getAllItineraries"],
         mutationFn: async () => {
-            const response = await apiClient<UserItineraries>({
+            const response = await apiClient<UserItineraryItem[]>({
                 method: "GET",
                 url: "/api/get",
                 requiresAuth: true,
