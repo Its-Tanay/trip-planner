@@ -24,10 +24,19 @@ def generate_itinerary(params, current_user):
         activity_options = query_activity_options(session, city, activity_budget, accessibility_needed, activity_categories)
         
         full_itinerary = assign_activities(meal_plans, activity_options, start_date, no_of_days)
+
+        total_expense = calculate_total_expense(full_itinerary)
         
         save_itinerary_to_db(engine, itinerary.id, full_itinerary)
         
-        return {**params, "itinerary": full_itinerary}
+        return {"itinerary": full_itinerary, "start_date": start_date, "end_date": end_date, "total_expense": total_expense}
+    
+def calculate_total_expense(full_itinerary):
+    total_expense = 0
+    for day in full_itinerary:
+        for item in day:
+            total_expense += item.get("expense")
+    return total_expense
 
 def extract_params(params):
     return (
