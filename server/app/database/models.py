@@ -29,6 +29,7 @@ class City(Base):
 
     activities: Mapped[List['Activity']] = relationship(back_populates='city')
     food_options: Mapped[List['FoodOption']] = relationship(back_populates='city')
+    # itineraries: Mapped[List['Itinerary']] = relationship(back_populates='city')
 
 class Category(Base):
     __tablename__ = 'category'
@@ -175,10 +176,11 @@ class Itinerary(Base):
     created_at: Mapped[datetime] = mapped_column()
     start_date: Mapped[datetime] = mapped_column()
     end_date: Mapped[datetime] = mapped_column()
-
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
+    city_id: Mapped[int] = mapped_column(ForeignKey('city.id'))
 
     user: Mapped[User] = relationship(back_populates='itineraries')
+    city: Mapped[City] = relationship()
     activities: Mapped[List[Activity]] = relationship(secondary='itinerary_activity')
     food_options: Mapped[List[FoodOption]] = relationship(secondary='itinerary_food')
 
@@ -189,7 +191,8 @@ class Itinerary(Base):
             "created_at": self.created_at,
             "start_date": self.start_date,
             "end_date": self.end_date,
-            "user_id": self.user_id
+            "user_id": self.user_id,
+            "city_id": self.city_id
         }
 
 ItineraryActivity = Table(

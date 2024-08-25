@@ -1,3 +1,4 @@
+import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -38,7 +39,7 @@ def login():
     user = session.query(User).filter_by(username=username).first()
 
     if user and check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=60))
         return jsonify(access_token=access_token, username=user.username, email=user.email), 200
     else:
         return jsonify({"msg": "Invalid username or password"}), 401

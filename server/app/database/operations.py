@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from .models import Activity, FoodOption
+from .models import Activity, City, FoodOption
 from sqlalchemy.orm import Session
 from app.database.db import engine
 from functools import cmp_to_key
@@ -13,7 +13,7 @@ def generate_itinerary(params, current_user):
     with Session(engine) as session:
         start_date, end_date, city, activity_budget, activity_categories, food_budget, food_cuisines, is_veg, accessibility_needed = extract_params(params)
         
-        itinerary = create_new_itinerary(session, start_date, end_date, current_user)
+        itinerary = create_new_itinerary(session, start_date, end_date, current_user, city)
         
         food_options = query_food_options(session, city, food_budget, is_veg, accessibility_needed, food_cuisines)
         
@@ -51,13 +51,14 @@ def extract_params(params):
         params.get("accessibility_need")
     )
 
-def create_new_itinerary(session, start_date, end_date, current_user):
+def create_new_itinerary(session, start_date, end_date, current_user, city):
     itinerary = Itinerary(
-        name="", 
+        name=f"Itinerary for {city.name}", 
         created_at=datetime.now(), 
         start_date=datetime.strptime(start_date, "%Y-%m-%d"), 
         end_date=datetime.strptime(end_date, "%Y-%m-%d"), 
-        user_id=current_user
+        user_id=current_user,
+        city_id=city
     )
     session.add(itinerary)
     session.commit()
@@ -250,17 +251,20 @@ def save_itinerary_to_db(engine, itinerary_id, full_itinerary):
 
 def get_itineraries_by_user(current_user):
     with Session(engine) as session:
-        statement = select(Itinerary).where(Itinerary.user_id == current_user)
+        statement = select(Itinerary, City).join(Itinerary.city).where(Itinerary.user_id == current_user)
 
-        results= []
+        results = []
 
         for obj in session.execute(statement):
-            results.append(obj.Itinerary.to_dict())
+            results.append({
+                **obj.Itinerary.to_dict(),
+                "city": obj.City.name
+            })
 
         return results
     
 def get_itinerary_by_id(current_user, itinerary_id):
-    statement = select(Itinerary).where(Itinerary.id == itinerary_id)
+    statement = select(Itinerary, City).join(Itinerary.city).where(Itinerary.id == itinerary_id)
 
     itinerary = {}
 
@@ -270,7 +274,7 @@ def get_itinerary_by_id(current_user, itinerary_id):
             print(obj.Itinerary.user_id)
             if obj.Itinerary.user_id != current_user:
                 return None
-            itinerary = obj.Itinerary.to_dict()
+            itinerary = {**obj.Itinerary.to_dict(), "city": obj.City.name}
 
     no_of_days = (itinerary.get('end_date') - itinerary.get('start_date')).days + 1
     allForThisTrip = []
@@ -321,3 +325,16 @@ def get_itinerary_by_id(current_user, itinerary_id):
         **itinerary,
         "itinerary": allForThisTrip
     }
+
+def delete_itinerary_by_id(current_user, itinerary_id):
+    statement = select(Itinerary).where(Itinerary.id == itinerary_id)
+
+    with Session(engine) as session:
+        res = session.execute(statement)
+        for obj in res:
+            if obj.Itinerary.user_id != current_user:
+                return False
+            session.delete(obj.Itinerary)
+            session.commit()
+            return True
+    return False            
