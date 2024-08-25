@@ -60,6 +60,9 @@ export const ItineraryContextProvider = ({
     }
 
     const errorHandler = (error: any) => {
+        if(error.response?.status === 401) {
+
+        }
         toast({
             title: "Itinerary creation failed",
             description: error.message,

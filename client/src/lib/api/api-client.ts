@@ -1,4 +1,4 @@
-import { getToken, removeToken } from './auth';
+import { getAccessToken, removeUserDetails } from './auth';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -17,7 +17,7 @@ async function apiClient<T>({ method, url, body, headers = {}, requiresAuth = tr
   const fullUrl = `${BASE_URL}${url}`;
   
   if (requiresAuth) {
-    const token = getToken();
+    const token = getAccessToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -35,8 +35,7 @@ async function apiClient<T>({ method, url, body, headers = {}, requiresAuth = tr
   const response = await fetch(fullUrl, options);
 
   if (response.status === 401) {
-    removeToken();
-    onUnauthorized?.();
+    removeUserDetails();
     throw new Error('Unauthorized');
   }
 

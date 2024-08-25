@@ -5,11 +5,11 @@ import React, {
     type ReactNode,
 } from "react";
 import { LoginResponse } from "../../interfaces/auth";
-import { isAuthenticated } from "../api/auth";
+import { isAuthenticated, getUserDetails } from "../api/auth";
 
 export interface AuthContextType {
-    userdetails : LoginResponse;
-    setUserdetails: Dispatch<React.SetStateAction<LoginResponse>>;
+    user : LoginResponse;
+    setUser: Dispatch<React.SetStateAction<LoginResponse>>;
     isLoggedin: boolean;
     setIsLoggedin: Dispatch<React.SetStateAction<boolean>>;
 }
@@ -24,15 +24,21 @@ export const AuthContextProvider = ({
     children,
 }: AuthContextProviderProps): JSX.Element => {
 
-    const [userdetails, setUserdetails] = React.useState({} as LoginResponse);
+    const [user, setUser] = React.useState<LoginResponse>(getUserDetails());
 
-    const [isLoggedin, setIsLoggedin] = React.useState(isAuthenticated());
+    const [isLoggedin, setIsLoggedin] = React.useState<boolean>(isAuthenticated());
+
+    React.useEffect(() => {
+        setUser(getUserDetails());
+        setIsLoggedin(isAuthenticated());
+    }
+    , [isLoggedin]);
     
     return (
         <AuthContext.Provider 
             value={{
-                userdetails,
-                setUserdetails,
+                user,
+                setUser,
                 isLoggedin,
                 setIsLoggedin,
             }}

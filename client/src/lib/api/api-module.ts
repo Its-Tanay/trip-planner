@@ -2,7 +2,6 @@ import apiClient from "./api-client";
 import { useMutation } from "@tanstack/react-query";
 import { ItineraryRes } from "@/interfaces/itinerary-res";
 import { ItineraryReq } from "@/interfaces/itinerary-req";
-import { setToken } from './auth';
 import { LoginRequest, LoginResponse } from "@/interfaces/auth";
 
 export interface MutateFunctionInterface<P, R> {
@@ -27,7 +26,6 @@ export const useLogin = (
                 body: data,
                 requiresAuth: false,
             });
-            setToken(response.access_token);
             return response;
         },
         onSuccess: (response) => {
@@ -60,7 +58,6 @@ export const useSignup = (
                 body: data,
                 requiresAuth: false,
             });
-            setToken(response.access_token);
             return response;
         },
         onSuccess: (response) => {

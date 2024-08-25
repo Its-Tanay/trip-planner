@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SignupDialog from "../auth-dialogs/signup";
 import LoginDialog from "../auth-dialogs/login";
-import { removeToken } from "../../lib/api/auth";
+import { removeUserDetails } from "../../lib/api/auth";
 import { Button } from "../ui/button";
 import { useAuthContext } from "../../lib/context/auth-context";
 import { useItineraryContext, defaultItineraryReq } from "../../lib/context/itinerary-context";
@@ -11,7 +11,7 @@ import { CurrentPage } from "../../interfaces/itinerary-req";
 
 const Header: React.FC = () => {
 
-    const { isLoggedin, setIsLoggedin, userdetails } = useAuthContext();
+    const { isLoggedin, setIsLoggedin, user } = useAuthContext();
 
     const { setCurrentPage, setItineraryReq } = useItineraryContext();
 
@@ -32,7 +32,7 @@ const Header: React.FC = () => {
     };
 
     const handleLogout = () => {
-        removeToken();
+        removeUserDetails();
         setIsLoggedin(false);
         navigate("/");
     };
@@ -51,7 +51,7 @@ const Header: React.FC = () => {
             {isLoggedin ? (
                     <>
                         <p>
-                            Welcome, {userdetails.username}
+                            Welcome, {user.username}
                         </p>
                         <Button variant="outline" onClick={handleLogout}>
                             Logout

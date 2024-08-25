@@ -12,15 +12,15 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { useLogin } from "../../lib/api/api-module";
 import { LoginRequest, LoginResponse } from "../../interfaces/auth";
-import { setToken } from "../../lib/api/auth";
 import { useAuthContext } from "../../lib/context/auth-context";
 import { useToast } from "../ui/toast/use-toast";
+import { setUserDetails } from "../../lib/api/auth";
 
 const LoginDialog: React.FC = () => {
 
     const { toast } = useToast();
 
-    const { setIsLoggedin, setUserdetails } = useAuthContext();
+    const { setIsLoggedin, setUser } = useAuthContext();
 
     const [open, setOpen] = React.useState(false);
 
@@ -30,8 +30,8 @@ const LoginDialog: React.FC = () => {
     } as LoginRequest);
 
     const successHandler = (data: LoginResponse) => {
-        setUserdetails(data);
-        setToken(data.access_token);
+        setUserDetails(data);
+        setUser(data);
         setIsLoggedin(true);
         setOpen(false);
         toast({

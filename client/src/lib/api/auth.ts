@@ -1,17 +1,29 @@
-const TOKEN_KEY = 'auth_token';
+import { LoginResponse } from "@/interfaces/auth";
 
-export const setToken = (token: string) => {
-    localStorage.setItem(TOKEN_KEY, token);
-};
+const USER_DETAILS = 'user_details';
 
-export const getToken = () => {
-    return localStorage.getItem(TOKEN_KEY);
-};
+export const setUserDetails = (userDetails : LoginResponse) => {
+    localStorage.setItem(USER_DETAILS, JSON.stringify(userDetails));
+}
 
-export const removeToken = () => {
-    localStorage.removeItem(TOKEN_KEY);
-};
+export const getUserDetails = () => {
+    let userDetails = localStorage.getItem(USER_DETAILS);
+    if(userDetails){
+        return JSON.parse(userDetails);
+    };
+}
+
+export const getAccessToken = () => {
+    let userDetails = getUserDetails();
+    if(userDetails){
+        return userDetails.access_token;
+    }
+}
+
+export const removeUserDetails = () => {
+    localStorage.removeItem(USER_DETAILS);
+}
 
 export const isAuthenticated = () => {
-    return !!getToken();
-};
+    return !!getUserDetails();
+}
