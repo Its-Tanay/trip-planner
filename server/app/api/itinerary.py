@@ -15,7 +15,7 @@ def api_post_create_itinerary():
         if not request_data:
             return jsonify({"error": "No JSON payload provided or JSON is invalid."}), 400
         
-        itinerary = generate_itinerary(request_data)
+        itinerary = generate_itinerary(request_data, current_user)
         return jsonify(itinerary), 200
 
     except ValueError as ve:
