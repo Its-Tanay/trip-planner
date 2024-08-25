@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.database.operations import generate_itinerary, get_itineraries_by_user
+from app.database.operations import generate_itinerary, get_itineraries_by_user, get_itinerary_by_id
 from flask_cors import CORS
 
 itinerary_v1 = Blueprint('itinerary_v1', 'itinerary_v1', url_prefix='/api')
@@ -36,6 +36,23 @@ def get_all_itineraries():
     try:
         current_user = get_jwt_identity()
         data = get_itineraries_by_user(current_user)
+        return jsonify(data)
+    except Exception as e:
+        raise e
+    
+@itinerary_v1.route('get/<int:id>', methods=["GET"])
+@jwt_required() 
+def get_an_itinerary(id):
+    """
+    get one itinerary
+    """
+    try:
+        current_user = get_jwt_identity()
+        data = get_itinerary_by_id(current_user, id)
+
+        if not data:
+            return jsonify("not your itinerary"), 403
+
         return jsonify(data)
     except Exception as e:
         raise e

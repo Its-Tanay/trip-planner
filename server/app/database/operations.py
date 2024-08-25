@@ -249,3 +249,66 @@ def get_itineraries_by_user(current_user):
             results.append(obj.Itinerary.to_dict())
 
         return results
+    
+def get_itinerary_by_id(current_user, itinerary_id):
+    statement = select(Itinerary).where(Itinerary.id == itinerary_id)
+
+    itinerary = {}
+
+    with Session(engine) as session:
+        res = session.execute(statement)
+        for obj in res:
+            print(obj.Itinerary.user_id)
+            if obj.Itinerary.user_id != current_user:
+                return None
+            itinerary = obj.Itinerary.to_dict()
+
+    no_of_days = (itinerary.get('end_date') - itinerary.get('start_date')).days + 1
+    allForThisTrip = []
+
+    for i in range(no_of_days):
+        allForToday = []
+        stmt = select(ItineraryFood, FoodOption).join(FoodOption).where(
+            (ItineraryFood.c.itinerary_id == itinerary_id) &
+            (ItineraryFood.c.day == i)
+        )
+
+        with engine.connect() as conn:
+            for row in conn.execute(stmt):
+                allForToday.append({
+                    **row._asdict(),
+                    "startTime": row._asdict().get('start_time').strftime("%H:%M"),
+                    "endTime": row._asdict().get('start_time') + timedelta(
+                        hours=int(row._asdict().get('duration')/60),
+                        minutes=int(row._asdict().get('duration')%60)
+                    ),
+                    "expense": row._asdict().get('average_price'),
+                    "type": "food"
+                })
+
+        stmt = select(ItineraryActivity, Activity).join(Activity).where(
+            (ItineraryActivity.c.itinerary_id == itinerary_id) &
+            (ItineraryActivity.c.day == i)
+        )
+
+        with engine.connect() as conn:
+            for row in conn.execute(stmt):
+                allForToday.append({
+                    **row._asdict(),
+                    "startTime": row._asdict().get('start_time').strftime("%H:%M"),
+                    "endTime": row._asdict().get('start_time') + timedelta(
+                        hours=int(row._asdict().get('duration')/60),
+                        minutes=int(row._asdict().get('duration')%60)
+                    ),
+                    "expense": row._asdict().get('average_price'),
+                    "type": "activity"
+                })
+
+        allForThisTrip.append(sorted(allForToday, key=cmp_to_key(lambda item1, item2:
+            (item1.get('start_time') - item2.get('start_time')).total_seconds()
+        )))
+
+    return {
+        **itinerary,
+        "itinerary": allForThisTrip
+    }
