@@ -1,8 +1,9 @@
 import apiClient from "./api-client";
 import { useMutation } from "@tanstack/react-query";
-import { ItineraryRes } from "@/interfaces/itinerary-res";
-import { ItineraryReq } from "@/interfaces/itinerary-req";
+import { ItineraryRes } from "../../interfaces/itinerary-res";
+import { ItineraryReq } from "../../interfaces/itinerary-req";
 import { LoginRequest, LoginResponse } from "@/interfaces/auth";
+import { UserItineraries } from "@/interfaces/user-itineraries";
 
 export interface MutateFunctionInterface<P, R> {
     isPending: boolean;
@@ -112,3 +113,34 @@ export const useCreateItinerary = (
         data: itineraryMutation.data,
     };
 };
+
+export const useGetAllItineraries = (
+    onSuccessHandler?: (data: UserItineraries) => void,
+    onErrorHandler?: (error: any) => void
+): MutateFunctionInterface<void, UserItineraries> => {
+    const itineraryMutation = useMutation({
+        mutationKey: ["getAllItineraries"],
+        mutationFn: async () => {
+            const response = await apiClient<UserItineraries>({
+                method: "GET",
+                url: "/api/get",
+                requiresAuth: true,
+            });
+            return response;
+        },
+        onSuccess: (response) => {
+            onSuccessHandler?.(response);
+        },
+        onError: (error) => {
+            onErrorHandler?.(error);
+        },
+    });
+    return {
+        isPending: itineraryMutation.isPending,
+        isError: itineraryMutation.isError,
+        isSuccess: itineraryMutation.isSuccess,
+        mutate: itineraryMutation.mutate,
+        mutateAsync: itineraryMutation.mutateAsync,
+        data: itineraryMutation.data,
+    };
+}

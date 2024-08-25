@@ -38,7 +38,7 @@ const Header: React.FC = () => {
     };
 
     return (
-        <header className="w-screen flex flex-row items-center justify-between bg-transparent px-8 py-4 md:px-16 md:py-8 lg:px-24 lg:py-8">
+        <header className="w-screen flex flex-row items-center justify-between bg-transparent px-8 py-4 md:px-24 md:py-8 lg:px-36 lg:py-8">
             <div className="flex items-center gap-4 md:gap-8 lg:gap-12">
                 {!isHomepage && (
                     <ChevronLeft size={24} onClick={handleBackClick} className="cursor-pointer" />
