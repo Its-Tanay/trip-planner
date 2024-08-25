@@ -182,6 +182,16 @@ class Itinerary(Base):
     activities: Mapped[List[Activity]] = relationship(secondary='itinerary_activity')
     food_options: Mapped[List[FoodOption]] = relationship(secondary='itinerary_food')
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "created_at": self.created_at,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+            "user_id": self.user_id
+        }
+
 ItineraryActivity = Table(
     'itinerary_activity',
     Base.metadata,

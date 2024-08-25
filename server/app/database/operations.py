@@ -55,7 +55,7 @@ def create_new_itinerary(session, start_date, end_date, current_user):
     return itinerary
 
 def calculate_trip_duration(start_date, end_date):
-    return (datetime.strptime(end_date, "%Y-%m-%d") - datetime.strptime(start_date, "%Y-%m-%d")).days
+    return (datetime.strptime(end_date, "%Y-%m-%d") - datetime.strptime(start_date, "%Y-%m-%d")).days + 1
 
 def query_food_options(session, city, food_budget, is_veg, accessibility_needed, food_cuisines):
     foodOptions = []
@@ -238,3 +238,14 @@ def save_itinerary_to_db(engine, itinerary_id, full_itinerary):
                     )
                     conn.execute(statement)
             conn.commit()
+
+def get_itineraries_by_user(current_user):
+    with Session(engine) as session:
+        statement = select(Itinerary).where(Itinerary.user_id == current_user)
+
+        results= []
+
+        for obj in session.execute(statement):
+            results.append(obj.Itinerary.to_dict())
+
+        return results

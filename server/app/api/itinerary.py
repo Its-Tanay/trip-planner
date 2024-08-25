@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.database.operations import generate_itinerary
+from app.database.operations import generate_itinerary, get_itineraries_by_user
 from flask_cors import CORS
 
 itinerary_v1 = Blueprint('itinerary_v1', 'itinerary_v1', url_prefix='/api')
@@ -26,3 +26,16 @@ def api_post_create_itinerary():
 
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
+    
+@itinerary_v1.route('get', methods=["GET"])
+@jwt_required() 
+def get_all_itineraries():
+    """
+    get all itineraries
+    """
+    try:
+        current_user = get_jwt_identity()
+        data = get_itineraries_by_user(current_user)
+        return jsonify(data)
+    except Exception as e:
+        raise e
