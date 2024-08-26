@@ -20,9 +20,7 @@ const LoginDialog: React.FC = () => {
 
     const { toast } = useToast();
 
-    const { setIsLoggedin, setUser } = useAuthContext();
-
-    const [open, setOpen] = React.useState(false);
+    const { setIsLoggedin, setUser, isLoginDialogOpen, setIsLoginDialogOpen, setIsSignupDialogOpen } = useAuthContext();
 
     const [formData, setFormData] = useState({ 
         username: "", 
@@ -33,7 +31,7 @@ const LoginDialog: React.FC = () => {
         setUserDetails(data);
         setUser(data);
         setIsLoggedin(true);
-        setOpen(false);
+        setIsLoginDialogOpen(false);
         toast({
             title: "Login successful",
             description: "You have been logged in",
@@ -63,7 +61,7 @@ const LoginDialog: React.FC = () => {
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="border-accent-foreground">Login</Button>
             </DialogTrigger>
@@ -101,7 +99,10 @@ const LoginDialog: React.FC = () => {
                                 {loginMutation.isPending ? "Logging in..." : "Log In"}
                             </Button>
                             <p className="text-sm text-[#98A2B3]">
-                                Don't have an account? <span className="text-accent-foreground">Sign Up</span>
+                                Don't have an account? <span onClick={() => {
+                                    setIsSignupDialogOpen(true)
+                                    setIsLoginDialogOpen(false)
+                                    }} className="text-accent-foreground cursor-pointer">Sign Up</span>
                             </p>
                         </div>
                     </DialogFooter>

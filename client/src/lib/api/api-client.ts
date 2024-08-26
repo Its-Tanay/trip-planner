@@ -36,7 +36,6 @@ async function apiClient<T>({ method, url, body, headers = {}, requiresAuth = tr
 
   if (response.status === 401) {
     removeUserDetails();
-    window.location.assign('/');
     throw new Error('Unauthorized');
   }
 

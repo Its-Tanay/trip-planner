@@ -12,6 +12,10 @@ export interface AuthContextType {
     setUser: Dispatch<React.SetStateAction<LoginResponse>>;
     isLoggedin: boolean;
     setIsLoggedin: Dispatch<React.SetStateAction<boolean>>;
+    isLoginDialogOpen: boolean;
+    setIsLoginDialogOpen: Dispatch<React.SetStateAction<boolean>>;
+    isSignupDialogOpen: boolean;
+    setIsSignupDialogOpen: Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +32,10 @@ export const AuthContextProvider = ({
 
     const [isLoggedin, setIsLoggedin] = React.useState<boolean>(isAuthenticated());
 
+    const [isLoginDialogOpen, setIsLoginDialogOpen] = React.useState<boolean>(false);
+
+    const [isSignupDialogOpen, setIsSignupDialogOpen] = React.useState<boolean>(false);
+
     React.useEffect(() => {
         setUser(getUserDetails());
         setIsLoggedin(isAuthenticated());
@@ -41,6 +49,10 @@ export const AuthContextProvider = ({
                 setUser,
                 isLoggedin,
                 setIsLoggedin,
+                isLoginDialogOpen,
+                setIsLoginDialogOpen,
+                isSignupDialogOpen,
+                setIsSignupDialogOpen
             }}
         >
             {children}

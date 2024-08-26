@@ -13,12 +13,13 @@ import { Label } from "../../components/ui/label";
 import { SignupReq } from "../../interfaces/auth";
 import { useSignup } from "../../lib/api/api-module";
 import { useToast } from "../ui/toast/use-toast";
+import { useAuthContext } from "../../lib/context/auth-context";
 
 const SignupDialog: React.FC = () => {
 
     const { toast } = useToast();
 
-    const [open, setOpen] = React.useState(false);
+    const { isSignupDialogOpen, setIsSignupDialogOpen, setIsLoginDialogOpen } = useAuthContext();
 
     const [formData, setFormData] = React.useState<SignupReq>({
         email: "",
@@ -32,7 +33,7 @@ const SignupDialog: React.FC = () => {
             description: data.message,
             variant: "default",
         });
-        setOpen(false);
+        setIsSignupDialogOpen(false);
     }
 
     const errorHandler = (error: any) => {
@@ -65,7 +66,7 @@ const SignupDialog: React.FC = () => {
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={isSignupDialogOpen} onOpenChange={setIsSignupDialogOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="border-accent-foreground">Sign Up</Button>
             </DialogTrigger>
@@ -118,7 +119,10 @@ const SignupDialog: React.FC = () => {
                             </Button>
                             <p className="text-sm text-[#98A2B3]">
                                 Already have an account?{" "}
-                                <span className="text-accent-foreground">Log In</span>
+                                <span onClick={() => {
+                                    setIsLoginDialogOpen(true)
+                                    setIsSignupDialogOpen(false)
+                                    }} className="text-accent-foreground">Log In</span>
                             </p>
                         </div>
                     </DialogFooter>

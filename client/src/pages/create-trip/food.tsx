@@ -8,12 +8,15 @@ import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/loader/index";
 import { useToast } from "../../components/ui/toast/use-toast";
+import { useAuthContext } from "../../lib/context/auth-context";
 
 const FoodPage: React.FC = () => {
 
     const { toast } = useToast();
 
     const { setItineraryReq, itineraryReq, setCurrentPage, itineraryMutation } = useItineraryContext();
+
+    const { setIsLoginDialogOpen, isLoggedin } = useAuthContext();
 
     const navigate = useNavigate();
 
@@ -68,13 +71,17 @@ const FoodPage: React.FC = () => {
 
     const handleNextClick = async () => {
         if (validateFields()) {
-            try {
-                await itineraryMutation.mutateAsync(itineraryReq);
-                setCurrentPage(CurrentPage.ACTIVITY);
-                navigate("/trip-itinerary");
-                setItineraryReq(defaultItineraryReq);
-            } catch (error) {
-                console.error("Itinerary error:", error);
+            if (isLoggedin) {
+                try{
+                    await itineraryMutation.mutateAsync(itineraryReq);
+                    setCurrentPage(CurrentPage.ACTIVITY);
+                    navigate("/trip-itinerary");
+                    setItineraryReq(defaultItineraryReq);
+                } catch (error) {
+                    console.error("Itinerary error:", error);
+                }
+            } else {
+                setIsLoginDialogOpen(true);
             }
         } else {
             toast({
@@ -83,7 +90,7 @@ const FoodPage: React.FC = () => {
                 variant: "destructive",
             });
         }
-    };
+    }
 
     const handleBackClick = () => {
         setCurrentPage(CurrentPage.ACTIVITY);
