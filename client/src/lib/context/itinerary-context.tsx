@@ -9,6 +9,7 @@ import { ItineraryReq, CurrentPage, Budget } from "../../interfaces/itinerary-re
 import { MutateFunctionInterface, useCreateItinerary } from "../api/api-module";
 import { ItineraryRes } from "../../interfaces/itinerary-res";
 import { useToast } from "../../components/ui/toast/use-toast";
+import { useGetItineraryById } from "../api/api-module";
 
 interface ItineraryContextType {
     itineraryReq: ItineraryReq;
@@ -17,6 +18,7 @@ interface ItineraryContextType {
     setCurrentPage: Dispatch<SetStateAction<CurrentPage>>;
     itineraryRes: ItineraryRes | undefined;
     itineraryMutation: MutateFunctionInterface<ItineraryReq, ItineraryRes>;
+    getItineraryById: MutateFunctionInterface<{id : number}, ItineraryRes>;
 }
 
 const ItineraryContext = createContext<ItineraryContextType | undefined>(undefined);
@@ -71,6 +73,23 @@ export const ItineraryContextProvider = ({
     }
 
     const itineraryMutation = useCreateItinerary(successHandler, errorHandler);
+
+    const byIdSuccessHandler = (data: ItineraryRes) => {
+        setItineraryRes(data);
+    }
+
+    const byIdErrorHandler = (error: any) => {
+        if(error.response?.status === 401) {
+            
+        }
+        toast({
+            title: "Itinerary fetch failed",
+            description: error.message,
+            variant: "destructive"
+        });
+    }
+
+    const getItineraryById = useGetItineraryById(byIdSuccessHandler, byIdErrorHandler);
     
     return (
         <ItineraryContext.Provider 
@@ -80,7 +99,8 @@ export const ItineraryContextProvider = ({
                 currentPage,
                 setCurrentPage,
                 itineraryMutation,
-                itineraryRes
+                itineraryRes,
+                getItineraryById
             }}
         >
             {children}

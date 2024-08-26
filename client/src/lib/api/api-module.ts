@@ -176,3 +176,39 @@ export const useDeleteItinerary = (
         data: deleteMutation.data,
     };
 }
+
+export const useGetItineraryById = (
+    onSuccessHandler?: (data: ItineraryRes) => void,
+    onErrorHandler?: (error: any) => void,
+    onSettledHandler?: () => void
+): MutateFunctionInterface<{ id: number }, ItineraryRes> => {
+    const getItineraryMutation = useMutation({
+        mutationKey: ["getItineraryById"],
+        mutationFn: async ({ id }: { id: number }) => {
+            const response = await apiClient<ItineraryRes>({
+                method: "GET",
+                url: `/api/get/${id}`,
+                requiresAuth: true,
+            });
+            return response;
+        },
+        onSuccess: (response) => {
+            onSuccessHandler?.(response);
+        },
+        onError: (error) => {
+            onErrorHandler?.(error);
+        },
+        onSettled: () => {
+            onSettledHandler?.();
+        },
+    });
+
+    return {
+        isPending: getItineraryMutation.isPending,
+        isError: getItineraryMutation.isError,
+        isSuccess: getItineraryMutation.isSuccess,
+        mutate: getItineraryMutation.mutate,
+        mutateAsync: getItineraryMutation.mutateAsync,
+        data: getItineraryMutation.data,
+    };
+};

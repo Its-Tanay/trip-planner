@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database.db import engine
 from functools import cmp_to_key
 from datetime import datetime, time, timedelta
-from sqlalchemy import desc, or_, case, insert, select
+from sqlalchemy import delete, desc, or_, case, insert, select
 from app.database.models import Activity, ActivityAvailability, FoodOption, FoodOptionAvailability, Itinerary, ItineraryActivity, ItineraryFood
 from sqlalchemy.orm import Session
 
@@ -53,7 +53,7 @@ def extract_params(params):
 
 def create_new_itinerary(session, start_date, end_date, current_user, city):
     itinerary = Itinerary(
-        name=f"Itinerary for {city.name}", 
+        name="Itinerary", 
         created_at=datetime.now(), 
         start_date=datetime.strptime(start_date, "%Y-%m-%d"), 
         end_date=datetime.strptime(end_date, "%Y-%m-%d"), 
@@ -331,14 +331,17 @@ def get_itinerary_by_id(current_user, itinerary_id):
     }
 
 def delete_itinerary_by_id(current_user, itinerary_id):
-    statement = select(Itinerary).where(Itinerary.id == itinerary_id)
-
     with Session(engine) as session:
-        res = session.execute(statement)
-        for obj in res:
-            if obj.Itinerary.user_id != current_user:
-                return False
-            session.delete(obj.Itinerary)
+        itinerary = session.query(Itinerary).filter(Itinerary.id == itinerary_id, Itinerary.user_id == current_user).first()
+        if not itinerary:
+            return False  
+        try:
+            session.execute(delete(ItineraryActivity).where(ItineraryActivity.c.itinerary_id == itinerary_id))
+            session.execute(delete(ItineraryFood).where(ItineraryFood.c.itinerary_id == itinerary_id))
+            session.delete(itinerary)
             session.commit()
             return True
-    return False            
+        except Exception as e:
+            session.rollback()
+            print(f"Error deleting itinerary: {str(e)}")
+            return False  

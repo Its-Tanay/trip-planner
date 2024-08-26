@@ -6,8 +6,15 @@ import { CalendarIcon } from "lucide-react";
 import { TrashIcon } from "lucide-react";
 import { useDeleteItinerary } from "../../../lib/api/api-module";
 import { useToast } from "../../../components/ui/toast/use-toast";
+import { useItineraryContext } from "../../../lib/context/itinerary-context";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../../components/loader";
 
 const TripCard: React.FC<UserItineraryItem & { onDeleteSuccess: () => void }> = ({ city, start_date, end_date, id, onDeleteSuccess }) => {
+
+    const navigate = useNavigate();
+
+    const { getItineraryById } = useItineraryContext();
 
     const successHandler = () => {
         onDeleteSuccess();
@@ -34,13 +41,32 @@ const TripCard: React.FC<UserItineraryItem & { onDeleteSuccess: () => void }> = 
         return diffDays;
     }
 
-    const handleDelete = () => {
+    const handleDelete = (e: { stopPropagation: () => void; }) => {
+        e.stopPropagation();
         deleteItineraryMutation.mutate();
     }
 
+    const handleClickonCard = async () => {
+        try{
+            await getItineraryById.mutateAsync({ id: id ?? 0 });
+            navigate("/trip-itinerary");
+        }
+        catch(error){
+            console.error("Error in getting itinerary by id", error);
+        }
+    }
+
+    if (getItineraryById.isPending) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                <Loader />
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col gap-2 w-full h-auto items-start">
-            <div className="w-full h-auto aspect-square rounded-[12px]">
+        <div className="flex flex-col gap-2 w-full h-auto items-start cursor-pointer">
+            <div className="w-full h-auto aspect-square rounded-[12px]" onClick={handleClickonCard}>
                 <img src={`${placeHolder}${city?.split(" ").join("+")}`} alt="city" className="w-full h-full rounded-[12px]" />
             </div>
             <h3 className="scroll-m-20 text-xl font-normal tracking-tight px-4">
