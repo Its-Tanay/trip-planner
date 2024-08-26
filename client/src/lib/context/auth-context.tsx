@@ -4,8 +4,10 @@ import React, {
     Dispatch,
     type ReactNode,
 } from "react";
-import { LoginResponse } from "../../interfaces/auth";
-import { isAuthenticated, getUserDetails } from "../api/auth";
+import { LoginRequest, LoginResponse } from "../../interfaces/auth";
+import { isAuthenticated, getUserDetails, setUserDetails } from "../api/auth";
+import { useLogin } from "../../lib/api/api-module";
+import { useToast } from "../../components/ui/toast/use-toast";
 
 export interface AuthContextType {
     user : LoginResponse;
@@ -16,6 +18,9 @@ export interface AuthContextType {
     setIsLoginDialogOpen: Dispatch<React.SetStateAction<boolean>>;
     isSignupDialogOpen: boolean;
     setIsSignupDialogOpen: Dispatch<React.SetStateAction<boolean>>;
+    loginMutation: any;
+    formData: LoginRequest;
+    setFormData: Dispatch<React.SetStateAction<LoginRequest>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +32,35 @@ interface AuthContextProviderProps {
 export const AuthContextProvider = ({
     children,
 }: AuthContextProviderProps): JSX.Element => {
+
+    const { toast } = useToast();
+
+    const [formData, setFormData] = React.useState({ 
+        username: "", 
+        password: "" 
+    } as LoginRequest);
+
+    const errorHandler = (error: any) => {
+        toast({
+            title: "Login failed",
+            description: error.message,
+            variant : "destructive"
+        });
+    };
+
+    const successHandler = (data: LoginResponse) => {
+        setUserDetails(data);
+        setUser(data);
+        setIsLoggedin(true);
+        setIsLoginDialogOpen(false);
+        toast({
+            title: "Login successful",
+            description: "You have been logged in",
+            variant: "default"
+        });
+    };
+
+    const loginMutation = useLogin(successHandler, errorHandler);
 
     const [user, setUser] = React.useState<LoginResponse>(getUserDetails());
 
@@ -52,7 +86,10 @@ export const AuthContextProvider = ({
                 isLoginDialogOpen,
                 setIsLoginDialogOpen,
                 isSignupDialogOpen,
-                setIsSignupDialogOpen
+                setIsSignupDialogOpen,
+                loginMutation,
+                formData,
+                setFormData,
             }}
         >
             {children}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "../../components/ui/button";
 import {
     Dialog,
@@ -10,44 +10,17 @@ import {
 } from "../../components/ui/dialog";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { useLogin } from "../../lib/api/api-module";
-import { LoginRequest, LoginResponse } from "../../interfaces/auth";
 import { useAuthContext } from "../../lib/context/auth-context";
-import { useToast } from "../ui/toast/use-toast";
-import { setUserDetails } from "../../lib/api/auth";
 
 const LoginDialog: React.FC = () => {
-
-    const { toast } = useToast();
-
-    const { setIsLoggedin, setUser, isLoginDialogOpen, setIsLoginDialogOpen, setIsSignupDialogOpen } = useAuthContext();
-
-    const [formData, setFormData] = useState({ 
-        username: "", 
-        password: "" 
-    } as LoginRequest);
-
-    const successHandler = (data: LoginResponse) => {
-        setUserDetails(data);
-        setUser(data);
-        setIsLoggedin(true);
-        setIsLoginDialogOpen(false);
-        toast({
-            title: "Login successful",
-            description: "You have been logged in",
-            variant: "default"
-        });
-    };
-
-    const errorHandler = (error: any) => {
-        toast({
-            title: "Login failed",
-            description: error.message,
-            variant : "destructive"
-        });
-    };
-
-    const loginMutation = useLogin(successHandler, errorHandler);
+    const { 
+        isLoginDialogOpen, 
+        setIsLoginDialogOpen, 
+        setIsSignupDialogOpen,
+        loginMutation,
+        formData,
+        setFormData
+    } = useAuthContext();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

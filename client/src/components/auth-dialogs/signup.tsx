@@ -16,10 +16,14 @@ import { useToast } from "../ui/toast/use-toast";
 import { useAuthContext } from "../../lib/context/auth-context";
 
 const SignupDialog: React.FC = () => {
-
     const { toast } = useToast();
-
-    const { isSignupDialogOpen, setIsSignupDialogOpen, setIsLoginDialogOpen } = useAuthContext();
+    const { 
+        isSignupDialogOpen, 
+        setIsSignupDialogOpen, 
+        setIsLoginDialogOpen,
+        loginMutation,
+        setFormData: setLoginFormData
+    } = useAuthContext();
 
     const [formData, setFormData] = React.useState<SignupReq>({
         email: "",
@@ -27,13 +31,30 @@ const SignupDialog: React.FC = () => {
         password: "",
     });
 
-    const successHandler = (data: any) => {
-        toast({
-            title: "Signup successful",
-            description: data.message,
-            variant: "default",
-        });
-        setIsSignupDialogOpen(false);
+    const successHandler = async (data: any) => {
+        try {
+            setLoginFormData({
+                username: formData.username,
+                password: formData.password
+            });
+            await loginMutation.mutateAsync({
+                username: formData.username,
+                password: formData.password
+            });
+            toast({
+                title: "Signup and login successful",
+                description: "Your account has been created and you're now logged in",
+                variant: "default",
+            });
+        } catch (error) {
+            console.error("Auto-login after signup failed:", error);
+            toast({
+                title: "Signup successful, but login failed",
+                description: "Please try logging in manually",
+                variant: "default",
+            });
+            setIsSignupDialogOpen(false);
+        }
     }
 
     const errorHandler = (error: any) => {
@@ -44,7 +65,7 @@ const SignupDialog: React.FC = () => {
         });
     }
 
-    const signupMutation = useSignup(successHandler,errorHandler);
+    const signupMutation = useSignup(successHandler, errorHandler);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
