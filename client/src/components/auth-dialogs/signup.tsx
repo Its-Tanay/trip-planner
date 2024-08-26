@@ -136,14 +136,14 @@ const SignupDialog: React.FC = () => {
                     <DialogFooter>
                         <div className="w-full flex flex-col items-end gap-4">
                             <Button className="w-full" type="submit" disabled={signupMutation.isPending}>
-                                {signupMutation.isPending ? "Signing Up..." : "Sign Up"}
+                                {signupMutation.isPending || loginMutation.isPending ? "Signing Up..." : "Sign Up"}
                             </Button>
                             <p className="text-sm text-[#98A2B3]">
                                 Already have an account?{" "}
                                 <span onClick={() => {
                                     setIsLoginDialogOpen(true)
                                     setIsSignupDialogOpen(false)
-                                    }} className="text-accent-foreground">Log In</span>
+                                    }} className="text-accent-foreground cursor-pointer">Log In</span>
                             </p>
                         </div>
                     </DialogFooter>
