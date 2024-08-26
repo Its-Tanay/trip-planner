@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { useAuthContext } from "../../lib/context/auth-context";
 import { useItineraryContext, defaultItineraryReq } from "../../lib/context/itinerary-context";
 import { CurrentPage } from "../../interfaces/itinerary-req";
+import { LucideLogOut } from "lucide-react";
 
 const Header: React.FC = () => {
 
@@ -49,14 +50,14 @@ const Header: React.FC = () => {
             </div>
             <nav className="w-fit flex items-center gap-4 lg:gap-8">
             {isLoggedin ? (
-                    <>
-                        <p>
-                            Welcome, {user.username}
-                        </p>
-                        <Button variant="outline" onClick={handleLogout}>
-                            Logout
+                    <div className="flex flex-col md:flex-row items-end md:items-center lg:gap-8">
+                        <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-2 md:border-[1px] border-accent-foreground">
+                            <span className="hidden md:inline">Logout</span><LucideLogOut size={16} />
                         </Button>
-                    </>
+                        <p>
+                            Welcome<span className="hidden md:inline">, {user.username}</span>
+                        </p>
+                    </div>
                 ) : (
                     <>
                         <SignupDialog />

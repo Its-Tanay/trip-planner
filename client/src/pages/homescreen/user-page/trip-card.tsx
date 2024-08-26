@@ -56,6 +56,14 @@ const TripCard: React.FC<UserItineraryItem & { onDeleteSuccess: () => void }> = 
         }
     }
 
+    if(deleteItineraryMutation.isPending) {
+        return (
+            <div className="w-screen h-full flex justify-center items-center">
+                <div className="w-8 h-8 border-2 border-t-[#03B55C] rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
     if (getItineraryById.isPending) {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
