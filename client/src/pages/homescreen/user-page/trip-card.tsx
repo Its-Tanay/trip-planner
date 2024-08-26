@@ -56,24 +56,8 @@ const TripCard: React.FC<UserItineraryItem & { onDeleteSuccess: () => void }> = 
         }
     }
 
-    if(deleteItineraryMutation.isPending) {
-        return (
-            <div className="w-screen h-full flex justify-center items-center">
-                <div className="w-8 h-8 border-2 border-t-[#03B55C] rounded-full animate-spin"></div>
-            </div>
-        );
-    }
-
-    if (getItineraryById.isPending) {
-        return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
-                <Loader />
-            </div>
-        );
-    }
-
-    return (
-        <div className="flex flex-col gap-2 w-full h-auto items-start cursor-pointer">
+    const renderCardContent = () => (
+        <>
             <div className="w-full h-auto aspect-square rounded-[12px]" onClick={handleClickonCard}>
                 <img src={`${placeHolder}${city?.split(" ").join("+")}`} alt="city" className="w-full h-full rounded-[12px]" />
             </div>
@@ -91,6 +75,25 @@ const TripCard: React.FC<UserItineraryItem & { onDeleteSuccess: () => void }> = 
                     <TrashIcon size={16} color="black" />
                 </Button>
             </div>
+        </>
+    )
+
+    if (getItineraryById.isPending) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                <Loader />
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex flex-col gap-2 w-full h-auto items-start cursor-pointer relative">
+            {renderCardContent()}
+            {deleteItineraryMutation.isPending && (
+                <div className="absolute inset-0 bg-gray-200 bg-opacity-75 backdrop-blur-sm flex items-center justify-center rounded-[12px]">
+                    <div className="w-8 h-8 border-2 border-t-[#03B55C] rounded-full animate-spin"></div>
+                </div>
+            )}
         </div>
     );
 }
