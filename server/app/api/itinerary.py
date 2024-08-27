@@ -3,18 +3,20 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.database.operations import generate_itinerary, get_itineraries_by_user, get_itinerary_by_id, delete_itinerary_by_id
 from flask_cors import CORS
 
+# Create a Blueprint for itinerary-related routes
 itinerary_v1 = Blueprint('itinerary_v1', 'itinerary_v1', url_prefix='/api')
-CORS(itinerary_v1)
+CORS(itinerary_v1)  # Enable CORS for this blueprint
 
 @itinerary_v1.route('generate', methods=["POST"])
-@jwt_required() 
+@jwt_required() # Require JWT authentication
 def api_post_create_itinerary():
     try:
-        current_user = get_jwt_identity()
-        request_data = request.get_json()
+        current_user = get_jwt_identity()  # Get the user ID from the JWT token
+        request_data = request.get_json()  # Get the JSON data from the request
         if not request_data:
             return jsonify({"error": "No JSON payload provided or JSON is invalid."}), 400
         
+        # Generate the itinerary using the request data and user ID
         itinerary = generate_itinerary(request_data, current_user)
         return jsonify(itinerary), 200
 
@@ -31,7 +33,7 @@ def api_post_create_itinerary():
 @jwt_required() 
 def get_all_itineraries():
     """
-    get all itineraries
+    Get all itineraries for the authenticated user.
     """
     try:
         current_user = get_jwt_identity()
@@ -44,7 +46,7 @@ def get_all_itineraries():
 @jwt_required() 
 def get_an_itinerary(id):
     """
-    get one itinerary
+    Get a specific itinerary by ID for the authenticated user.
     """
     try:
         current_user = get_jwt_identity()
@@ -61,7 +63,7 @@ def get_an_itinerary(id):
 @jwt_required() 
 def delete_an_itinerary(id):
     """
-    delete one itinerary
+    Delete a specific itinerary by ID for the authenticated user.
     """
     try:
         current_user = get_jwt_identity()

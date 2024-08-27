@@ -9,24 +9,25 @@ from app.database.models import Activity, ActivityAvailability, FoodOption, Food
 from sqlalchemy.orm import Session
 
 def generate_itinerary(params, current_user):
-    
+     # Main function to generate an itinerary based on user preferences
     with Session(engine) as session:
+        # Extract parameters from the input
         start_date, end_date, city, activity_budget, activity_categories, food_budget, food_cuisines, is_veg, accessibility_needed = extract_params(params)
-        
+        # Create a new itinerary in the database
         itinerary = create_new_itinerary(session, start_date, end_date, current_user, city)
-        
+        # Query food options based on user preferences
         food_options = query_food_options(session, city, food_budget, is_veg, accessibility_needed, food_cuisines)
-        
+        # Calculate the duration of the trip
         no_of_days = calculate_trip_duration(start_date, end_date)
-        
+        # Create meal plans for the entire trip
         meal_plans = create_meal_plans(food_options, start_date, no_of_days)
-        
+        # Query activity options based on user preferences
         activity_options = query_activity_options(session, city, activity_budget, accessibility_needed, activity_categories)
-        
+        # Assign activities to the itinerary
         full_itinerary = assign_activities(meal_plans, activity_options, start_date, no_of_days)
-
+        # Calculate the total expense of the itinerary
         total_expense = calculate_total_expense(full_itinerary)
-        
+        # Save the generated itinerary to the database
         save_itinerary_to_db(engine, itinerary.id, full_itinerary)
         
         return {"itinerary": full_itinerary, "start_date": start_date, "end_date": end_date, "total_expense": total_expense}
@@ -68,6 +69,7 @@ def calculate_trip_duration(start_date, end_date):
     return (datetime.strptime(end_date, "%Y-%m-%d") - datetime.strptime(start_date, "%Y-%m-%d")).days + 1
 
 def query_food_options(session, city, food_budget, is_veg, accessibility_needed, food_cuisines):
+    # Query food options based on user preferences for each day of the week
     foodOptions = []
     for day in range(7):
         statement = select(
@@ -75,6 +77,7 @@ def query_food_options(session, city, food_budget, is_veg, accessibility_needed,
         ).join(
             FoodOption.availabilities
         ).where(
+            # Apply filters based on user preferences and requirements
             (FoodOptionAvailability.day_of_week == day) & 
             (FoodOption.city_id == city) &
             (FoodOptionAvailability.close_time > FoodOptionAvailability.open_time) &
@@ -82,6 +85,7 @@ def query_food_options(session, city, food_budget, is_veg, accessibility_needed,
             (or_(is_veg == False, FoodOption.is_vegetarian == True)) &
             (or_(accessibility_needed == False, FoodOption.wheelchair_accessibility == True))
         ).order_by(
+            # Order by popularity, with bonus for preferred cuisines
             desc(
                 case(
                     (FoodOption.cuisine_id.in_(food_cuisines), FoodOption.popularity + 3),
@@ -101,6 +105,7 @@ def query_food_options(session, city, food_budget, is_veg, accessibility_needed,
     return foodOptions
 
 def create_meal_plans(food_options, start_date, no_of_days):
+    # Create meal plans for the entire trip
     allForThisTripUnsorted = []
     foodSelectsId = {}
     for i in range(no_of_days):
@@ -108,10 +113,12 @@ def create_meal_plans(food_options, start_date, no_of_days):
         currDate = datetime.strptime(start_date, "%Y-%m-%d") + delta
 
         b, l, d = None, None, None
-
+         # First pass: Try to find unique restaurants for breakfast, lunch, and dinner
         for option in food_options[int(currDate.strftime("%w"))]:
             if b and l and d:
                 break
+            # Check if the restaurant is open and serves the specific meal
+            # Assign the restaurant to the corresponding meal if conditions are met
             if not foodSelectsId.get(option.get('id')):
                 if not b and option.get('has_breakfast') and time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= 540 and time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute >= 600:
                     b = option
@@ -148,6 +155,7 @@ def create_meal_plans(food_options, start_date, no_of_days):
     return allForThisTripUnsorted
 
 def query_activity_options(session, city, activity_budget, accessibility_needed, activity_categories):
+    # Query activity options based on user preferences for each day of the week
     activityOptions = []
     for day in range(7):
         statement = select(
@@ -157,12 +165,14 @@ def query_activity_options(session, city, activity_budget, accessibility_needed,
         ).join(
             Activity.city
         ).where(
+            # Apply filters based on user preferences and requirements
             (ActivityAvailability.day_of_week == day) & 
             (Activity.city_id == city) &
             (ActivityAvailability.close_time > ActivityAvailability.open_time) &
             (Activity.budget_category <= activity_budget) &
             (or_(accessibility_needed == False, Activity.wheelchair_accessibility == True))
         ).order_by(
+            # Order by popularity, with bonus for preferred categories
             desc(
                 case(
                     (Activity.category_id.in_(activity_categories), Activity.popularity + 3),
@@ -182,6 +192,7 @@ def query_activity_options(session, city, activity_budget, accessibility_needed,
     return activityOptions
 
 def assign_activities(meal_plans, activity_options, start_date, no_of_days):
+     # Assign activities to the itinerary, fitting them between meals
     allForThisTrip = []
     activitySelectsId = {}
 
@@ -191,9 +202,12 @@ def assign_activities(meal_plans, activity_options, start_date, no_of_days):
 
         currEnd = 600  # Start after breakfast
 
+        # Assign morning activities (between breakfast and lunch)
         for option in activity_options[int(currDate.strftime("%w"))]:
             if not activitySelectsId.get(option.get('id')):
+                # Check if the activity fits in the available time slot
                 if time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= currEnd and min(time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute, 780) >= currEnd + option.get("average_duration"):
+                    # Add the activity to the day's plan
                     meal_plans[i].append({
                         **option,
                         "startTime": time(hour=int(currEnd/60), minute=int(currEnd%60)).strftime("%H:%M"),
@@ -206,7 +220,9 @@ def assign_activities(meal_plans, activity_options, start_date, no_of_days):
 
         currEnd = 840  # Start after lunch 
 
+        # Assign afternoon activities (between lunch and dinner)
         for option in activity_options[int(currDate.strftime("%w"))]:
+             # ... (similar logic as morning activities)
             if not activitySelectsId.get(option.get('id')):
                 if time.fromisoformat(option.get('open_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute <= currEnd and min(time.fromisoformat(option.get('close_time')).hour * 60 + time.fromisoformat(option.get('open_time')).minute, 1260) >= currEnd + option.get("average_duration"):
                     meal_plans[i].append({
@@ -219,6 +235,7 @@ def assign_activities(meal_plans, activity_options, start_date, no_of_days):
                     currEnd += option.get("average_duration")
                     activitySelectsId[option.get('id')] = True
 
+        # Sort the day's activities and meals by start time
         allForThisTrip.append(sorted(meal_plans[i], key=cmp_to_key(lambda item1, item2: 
             (datetime.strptime(item1.get('startTime'), "%H:%M") - datetime.strptime(item2.get('startTime'), "%H:%M")).total_seconds()
         )))
@@ -226,10 +243,12 @@ def assign_activities(meal_plans, activity_options, start_date, no_of_days):
     return allForThisTrip
 
 def save_itinerary_to_db(engine, itinerary_id, full_itinerary):
+    # Save the generated itinerary to the database
     with engine.connect() as conn:
         for i, day_itinerary in enumerate(full_itinerary):
             for obj in day_itinerary:
                 if obj.get('type') == 'activity':
+                    # Insert activity into ItineraryActivity table
                     statement = insert(ItineraryActivity).values(
                         itinerary_id=itinerary_id,
                         activity_id=obj.get('id'),
@@ -239,6 +258,7 @@ def save_itinerary_to_db(engine, itinerary_id, full_itinerary):
                     )
                     conn.execute(statement)
                 elif obj.get('type') == 'food':
+                    # Insert food option into ItineraryFood table
                     statement = insert(ItineraryFood).values(
                         itinerary_id=itinerary_id,
                         food_option_id=obj.get('id'),
@@ -250,6 +270,7 @@ def save_itinerary_to_db(engine, itinerary_id, full_itinerary):
             conn.commit()
 
 def get_itineraries_by_user(current_user):
+    # Retrieve all itineraries for a given user
     with Session(engine) as session:
         statement = select(Itinerary, City).join(Itinerary.city).where(Itinerary.user_id == current_user)
 
@@ -266,6 +287,7 @@ def get_itineraries_by_user(current_user):
         return results
     
 def get_itinerary_by_id(current_user, itinerary_id):
+    # Retrieve a specific itinerary by its ID for a given user
     statement = select(Itinerary, City).join(Itinerary.city).where(Itinerary.id == itinerary_id)
 
     itinerary = {}
@@ -283,6 +305,7 @@ def get_itinerary_by_id(current_user, itinerary_id):
 
     for i in range(no_of_days):
         allForToday = []
+        # Retrieve food options for this day
         stmt = select(ItineraryFood, FoodOption).join(FoodOption).where(
             (ItineraryFood.c.itinerary_id == itinerary_id) &
             (ItineraryFood.c.day == i)
@@ -301,6 +324,7 @@ def get_itinerary_by_id(current_user, itinerary_id):
                     "type": "food"
                 })
 
+        # Retrieve activities for this day
         stmt = select(ItineraryActivity, Activity).join(Activity).where(
             (ItineraryActivity.c.itinerary_id == itinerary_id) &
             (ItineraryActivity.c.day == i)
@@ -319,6 +343,7 @@ def get_itinerary_by_id(current_user, itinerary_id):
                     "type": "activity"
                 })
 
+        # Sort the day's activities and meals by start time
         allForThisTrip.append(sorted(allForToday, key=cmp_to_key(lambda item1, item2:
             (item1.get('start_time') - item2.get('start_time')).total_seconds()
         )))
@@ -331,13 +356,16 @@ def get_itinerary_by_id(current_user, itinerary_id):
     }
 
 def delete_itinerary_by_id(current_user, itinerary_id):
+    # Delete a specific itinerary by its ID for a given user
     with Session(engine) as session:
         itinerary = session.query(Itinerary).filter(Itinerary.id == itinerary_id, Itinerary.user_id == current_user).first()
         if not itinerary:
             return False  
         try:
+            # Delete related entries in ItineraryActivity and ItineraryFood tables
             session.execute(delete(ItineraryActivity).where(ItineraryActivity.c.itinerary_id == itinerary_id))
             session.execute(delete(ItineraryFood).where(ItineraryFood.c.itinerary_id == itinerary_id))
+            # Delete the itinerary itself
             session.delete(itinerary)
             session.commit()
             return True
