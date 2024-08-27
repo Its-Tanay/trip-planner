@@ -58,7 +58,6 @@ export const AutoComplete = ({
                 if (optionToSelect) {
                     setSelected(optionToSelect)
                     onValueChange?.(optionToSelect)
-                    console.log("Selected value (id):", optionToSelect.value)
                 }
             }
 
@@ -80,7 +79,6 @@ export const AutoComplete = ({
 
             setSelected(selectedOption)
             onValueChange?.(selectedOption)
-            console.log("Selected value (id):", selectedOption.value)
 
             setTimeout(() => {
                 inputRef?.current?.blur()

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useItineraryContext } from "../../lib/context/itinerary-context";
 import { AutoComplete, Option } from "../../components/ui/autocomplete";
 import { Cities, Categories } from "../data";
@@ -101,10 +101,6 @@ const ActivityPage: React.FC = () => {
                   to: itineraryReq.duration.endDate ? new Date(itineraryReq.duration.endDate) : undefined,
               }
             : undefined;
-
-    useEffect(() => {
-        console.log(itineraryReq);
-    }, [itineraryReq]);
 
     return (
         <div className="h-full max-w-[576px] w-full flex flex-col items-center gap-8 md:gap-12 lg:gap-10">

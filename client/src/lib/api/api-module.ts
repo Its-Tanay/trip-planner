@@ -5,6 +5,7 @@ import { ItineraryReq } from "../../interfaces/itinerary-req";
 import { LoginRequest, LoginResponse } from "@/interfaces/auth";
 import { UserItineraryItem} from "@/interfaces/user-itineraries";
 
+// Define a generic interface for mutation function results
 export interface MutateFunctionInterface<P, R> {
     isPending: boolean;
     isError: boolean;
@@ -14,6 +15,9 @@ export interface MutateFunctionInterface<P, R> {
     data: R | undefined;
 }
 
+/**
+ * Custom hook for user login
+ */
 export const useLogin = (
     onSuccessHandler?: (data: LoginResponse) => void,
     onErrorHandler?: (error: any) => void
@@ -46,6 +50,9 @@ export const useLogin = (
     };
 };
 
+/**
+ * Custom hook for user signup
+ */
 export const useSignup = (
     onSuccessHandler?: (data: LoginResponse) => void,
     onErrorHandler?: (error: any) => void
@@ -78,6 +85,9 @@ export const useSignup = (
     };
 };
 
+/**
+ * Custom hook for creating an itinerary
+ */
 export const useCreateItinerary = (
     onSuccessHandler?: (data: ItineraryRes) => void,
     onErrorHandler?: (error: any) => void,
@@ -114,6 +124,9 @@ export const useCreateItinerary = (
     };
 };
 
+/**
+ * Custom hook for getting all itineraries
+ */
 export const useGetAllItineraries = (
     onSuccessHandler?: (data: UserItineraryItem[]) => void,
     onErrorHandler?: (error: any) => void
@@ -145,6 +158,9 @@ export const useGetAllItineraries = (
     };
 }
 
+/**
+ * Custom hook for deleting an itinerary
+ */
 export const useDeleteItinerary = (
     id: number,
     onSuccessHandler?: () => void,
@@ -177,6 +193,9 @@ export const useDeleteItinerary = (
     };
 }
 
+/**
+ * Custom hook for getting an itinerary by ID
+ */
 export const useGetItineraryById = (
     onSuccessHandler?: (data: ItineraryRes) => void,
     onErrorHandler?: (error: any) => void,

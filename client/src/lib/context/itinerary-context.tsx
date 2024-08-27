@@ -11,6 +11,7 @@ import { ItineraryRes } from "../../interfaces/itinerary-res";
 import { useToast } from "../../components/ui/toast/use-toast";
 import { useGetItineraryById } from "../api/api-module";
 
+// Define the shape of the itinerary context
 interface ItineraryContextType {
     itineraryReq: ItineraryReq;
     setItineraryReq: Dispatch<SetStateAction<ItineraryReq>>;
@@ -27,6 +28,7 @@ interface ItineraryContextProviderProps {
     children: ReactNode;
 }
 
+// Default itinerary request
 export const defaultItineraryReq: ItineraryReq = {
     city: 0,
     accessibility_need: false,
@@ -45,25 +47,31 @@ export const defaultItineraryReq: ItineraryReq = {
     }
 };
 
+/**
+ * ItineraryContextProvider: Manages itinerary state and provides itinerary-related functionality
+ */
 export const ItineraryContextProvider = ({
     children,
 }: ItineraryContextProviderProps): JSX.Element => {
 
     const { toast } = useToast();
 
+    // State for current page and itinerary request/response
     const [currentPage, setCurrentPage] = React.useState<CurrentPage>(CurrentPage.ACTIVITY);
 
     const [itineraryReq, setItineraryReq] = React.useState<ItineraryReq>(defaultItineraryReq);
 
     const [itineraryRes, setItineraryRes] = React.useState<ItineraryRes>();
 
+    // Handle successful itinerary creation
     const successHandler = (data: ItineraryRes) => {
         setItineraryRes(data);
     }
 
+    // Handle itinerary creation errors
     const errorHandler = (error: any) => {
         if(error.response?.status === 401) {
-
+            // Handle unauthorized access
         }
         toast({
             title: "Itinerary creation failed",
@@ -72,15 +80,18 @@ export const ItineraryContextProvider = ({
         });
     }
 
+    // Use the create itinerary mutation
     const itineraryMutation = useCreateItinerary(successHandler, errorHandler);
 
+    // Handle successful itinerary fetch by ID
     const byIdSuccessHandler = (data: ItineraryRes) => {
         setItineraryRes(data);
     }
 
+    // Handle errors when fetching itinerary by ID
     const byIdErrorHandler = (error: any) => {
         if(error.response?.status === 401) {
-            
+            // Handle unauthorized access
         }
         toast({
             title: "Itinerary fetch failed",
@@ -89,6 +100,7 @@ export const ItineraryContextProvider = ({
         });
     }
 
+    // Use the get itinerary by ID mutation
     const getItineraryById = useGetItineraryById(byIdSuccessHandler, byIdErrorHandler);
     
     return (
@@ -108,6 +120,9 @@ export const ItineraryContextProvider = ({
     );
 };
 
+/**
+ * Hook to use the ItineraryContext
+ */
 export const useItineraryContext = (): ItineraryContextType => {
     const context = useContext(ItineraryContext);
     if (context === undefined) {
