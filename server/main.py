@@ -9,7 +9,7 @@ if __name__ == "__main__":
     app.config.update(load_config())
 
     with app.app_context():
-        app.run()
+        app.run(port=3000)
 
 else:
     gunicorn_app = create_app()
